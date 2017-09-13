@@ -17,15 +17,20 @@ class Triehard // compressed binary trie
 				bool flag;
 				Trienode * left;
 				Trienode * right;
+				
 				//Convenient method for printing.
 				//Returns a string to be able to chain
 				//printing more easily.
 				//Side is either 0 (left), or 1 (right)
-				string getNodeVal(int side){
+				string getNodeVal(int side)
+				{
 					string output = "";
-					for(int i = 0; i < magnitude; i ++){
+					
+					for(int i = 0; i < magnitude; ++i)
+					{
 						output += to_string(side);
 					}
+					
 					return output;
 				}
 				
@@ -54,18 +59,24 @@ class Triehard // compressed binary trie
 				{
 					return flag;
 				}
+				
 				//Side is 0 (left) or 1 (right)
-				void print(int side,string output = ""){
+				void print(int side, string output = "")
+				{
 					string val = getNodeVal(side);
 					cout << "Side: " << side << " Val: " << val << " Mag: " << magnitude <<  endl;
-					if(getFlag()){
+					
+					if(getFlag())
+					{
 						cout << output + val << endl;
 					}
-					if(left != nullptr){
-						left->print(0,output + val);
+					if(left != nullptr)
+					{
+						left->print(0, output + val);
 					}
-					if(right != nullptr){
-						right->print(1,output + val);
+					if(right != nullptr)
+					{
+						right->print(1, output + val);
 					}
 				}
 				
@@ -332,6 +343,7 @@ class Triehard // compressed binary trie
 						{
 							SKIP1:
 							curnode = curnode->setRight(1, false);
+							side = true;
 							continue;
 						}
 					}
@@ -392,6 +404,7 @@ class Triehard // compressed binary trie
 						{
 							SKIP2:
 							curnode = curnode->setLeft(1, false);
+							side = false;
 							continue;
 						}
 					}
