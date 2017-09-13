@@ -57,6 +57,7 @@ class Triehard // compressed binary trie
 				//Side is 0 (left) or 1 (right)
 				void print(int side,string output = ""){
 					string val = getNodeVal(side);
+					cout << "Side: " << side << " Val: " << val << " Mag: " << magnitude <<  endl;
 					if(getFlag()){
 						cout << output + val << endl;
 					}

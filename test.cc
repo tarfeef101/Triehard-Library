@@ -6,7 +6,7 @@ int main()
 {
 	Triehard * test = new Triehard();
 	cout << "success!" << endl;
-	int x[4] = {0,1,1};
+	int x[4] = {0,1,0};
 	cout << "success!" << endl;
 	int y[5] = {1,0,1,1,0};
 	cout << "success!" << endl;
