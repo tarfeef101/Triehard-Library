@@ -5,19 +5,18 @@ using namespace std;
 int main()
 {
 	Triehard * test = new Triehard();
-	cout << "success!" << endl;
-	int x[4] = {0,1,0};
-	cout << "success!" << endl;
+	cout << "success! Created test" << endl;
+	int x[3] = {0,1,0};
 	int y[5] = {1,0,1,1,0};
-	cout << "success!" << endl;
 	test->insert(x, 3);
-	cout << "success!" << endl;
+	cout << "success! inserted x" << endl;
+	test->insert(y, 5);
+	cout << "success! inserted y" << endl;
 	test->print();
-	/*test->insert(y, 5);
-	cout << "success!" << endl;
-	test->cut(x, 4);
-	cout << "success!" << endl;
+	test->cut(x, 3);
+	cout << "success! cut tree" << endl;
+	test->print();
 	delete test;
-	cout << "success!" << endl;
-	while(1);*/
+	cout << "success! Completed test" << endl;
+	//while(1);
 }
