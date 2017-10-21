@@ -12,10 +12,11 @@ int main()
 	cout << "success! inserted x" << endl;
 	test->insert(y, 5);
 	cout << "success! inserted y" << endl;
-	test->print();
+	test->myPrintIsBetterThanYoursLogan();
+	cout << "Print Done!" << endl;
 	test->cut(x, 3);
 	cout << "success! cut tree" << endl;
-	test->print();
+	test->myPrintIsBetterThanYoursLogan();
 	delete test;
 	cout << "success! Completed test" << endl;
 	//while(1);

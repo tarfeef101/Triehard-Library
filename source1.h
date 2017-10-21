@@ -1,6 +1,7 @@
 #ifndef __source1_H__
 #define __source1_H__
 #include <iostream>
+#include <vector>
 using namespace std;
 class Triehard // compressed binary trie
 // constructor should make a left and right that are empty for search to work
@@ -18,6 +19,7 @@ class Triehard // compressed binary trie
 				Trienode * left;
 				Trienode * right;
 				
+				/*
 				//Convenient method for printing.
 				//Returns a string to be able to chain
 				//printing more easily.
@@ -33,6 +35,7 @@ class Triehard // compressed binary trie
 					
 					return output;
 				}
+				*/
 				
 			public:
 			
@@ -60,6 +63,7 @@ class Triehard // compressed binary trie
 					return flag;
 				}
 				
+				/*
 				//Side is 0 (left) or 1 (right)
 				void print(int side, string output = "")
 				{
@@ -77,7 +81,7 @@ class Triehard // compressed binary trie
 					{
 						right->print(1, output + val);
 					}
-				}
+				}*/
 				
 				Trienode * getLeft()
 				{
@@ -150,6 +154,7 @@ class Triehard // compressed binary trie
 			delete this;
 		}
 		
+		/*
 		void print()
 		{
 			//Default param arg seems to be a bit different
@@ -157,6 +162,51 @@ class Triehard // compressed binary trie
 			//function, try to fix later perhaps?
 			if(left != nullptr)left->print(0);
 			if(right != nullptr)right->print(1);
+		} */
+		
+		// build an array of what is "processed" so far. then when a flag is hit, print that array. 
+		void mainPrint(Trienode * curnode, vector<int> * chars, int right)
+		{
+			if (!curnode) return;			
+			int curmag = curnode->getMag();
+			
+			while (curmag)
+			{
+				chars->push_back(right);
+				--curmag;
+			}
+			
+			if (curnode->getFlag())
+			{
+				int len = chars->size();
+				cout << "This is the size: "  << len << endl;
+				
+				for (int i = 0; i < len; i++)
+				{
+					cout << (*chars)[i] << " ";
+				}
+				cout << endl;
+			}
+			mainPrint(curnode->getLeft(), chars, 0);
+			mainPrint(curnode->getRight(), chars, 1);
+			curmag = curnode->getMag();
+			
+			while (curmag)
+			{
+				chars->pop_back();
+				--curmag;
+			}
+		}
+		
+		void myPrintIsBetterThanYoursLogan()
+		{
+			vector<int> * side1 = new vector<int>();
+			vector<int> * side2 = new vector<int>();
+			
+			mainPrint(left, side1, 0);
+			mainPrint(right, side2, 1);
+			delete side1;
+			delete side2;
 		}
 		
 		bool search(int * val, int len) // val is the string, len is its length
