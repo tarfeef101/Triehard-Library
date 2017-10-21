@@ -50,7 +50,6 @@ class Triehard // compressed binary trie
 				{
 					delete left;
 					delete right;
-					delete this;
 				}
 			
 				int getMag()
@@ -151,7 +150,6 @@ class Triehard // compressed binary trie
 		{
 			delete left;
 			delete right;
-			delete this;
 		}
 		
 		/*
@@ -179,7 +177,6 @@ class Triehard // compressed binary trie
 			if (curnode->getFlag())
 			{
 				int len = chars->size();
-				cout << "This is the size: "  << len << endl;
 				
 				for (int i = 0; i < len; i++)
 				{
@@ -486,6 +483,7 @@ class Triehard // compressed binary trie
 			
 			int curmag = curnode->getMag();
 			
+			cout << "loop starting" << endl;
 			for (int i = 0; i < len; i++) // each iteration checks the current character for accuracy. it does not prepare for the next character like the preamble
 			{
 				if (val[i]) // if next digit is 1
@@ -608,7 +606,7 @@ class Triehard // compressed binary trie
 				}
 				else
 				{
-					delete curnode;
+					delete curnode; // do not finish this step
 					prevnode->copyLeft(nullptr);
 				}
 			}
