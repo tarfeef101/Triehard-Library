@@ -19,7 +19,7 @@ class Triehard // compressed binary trie
 				Trienode * left;
 				Trienode * right;
 				
-				/*
+				
 				//Convenient method for printing.
 				//Returns a string to be able to chain
 				//printing more easily.
@@ -27,15 +27,15 @@ class Triehard // compressed binary trie
 				string getNodeVal(int side)
 				{
 					string output = "";
-					
+					string sideStr = to_string(side);
 					for(int i = 0; i < magnitude; ++i)
 					{
-						output += to_string(side);
+						output += sideStr;
 					}
 					
 					return output;
 				}
-				*/
+				
 				
 			public:
 			
@@ -62,7 +62,7 @@ class Triehard // compressed binary trie
 					return flag;
 				}
 				
-				/*
+				
 				//Side is 0 (left) or 1 (right)
 				void print(int side, string output = "")
 				{
@@ -80,7 +80,7 @@ class Triehard // compressed binary trie
 					{
 						right->print(1, output + val);
 					}
-				}*/
+				}
 				
 				Trienode * getLeft()
 				{
@@ -152,7 +152,7 @@ class Triehard // compressed binary trie
 			delete right;
 		}
 		
-		/*
+		
 		void print()
 		{
 			//Default param arg seems to be a bit different
@@ -160,7 +160,7 @@ class Triehard // compressed binary trie
 			//function, try to fix later perhaps?
 			if(left != nullptr)left->print(0);
 			if(right != nullptr)right->print(1);
-		} */
+		} 
 		
 		// build an array of what is "processed" so far. then when a flag is hit, print that array. 
 		void mainPrint(Trienode * curnode, vector<int> * chars, int right)
