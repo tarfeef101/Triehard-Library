@@ -15,11 +15,11 @@ int main()
 	cout << "success! inserted x" << endl;
 	test->insert(y, 5);
 	cout << "success! inserted y" << endl;
-	test->insert(z, 5);
+	test->insert(z, 1);
 	cout << "success! inserted z" << endl;
-	test->insert(a, 5);
+	test->insert(a, 7);
 	cout << "success! inserted a" << endl;
-	test->insert(b, 5);
+	test->insert(b, 7);
 	cout << "success! inserted b" << endl;
 	test->myPrintIsBetterThanYoursLogan();
 	cout << "Print Done!" << endl;
