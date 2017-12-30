@@ -371,6 +371,7 @@ class Triehard // compressed binary trie
 							while (curmag) // fills newnode with the extra magnitude
 							{
 								curnode->subMag();
+								--curmag;
 								newnode->addMag();
 							}
 							
@@ -434,6 +435,7 @@ class Triehard // compressed binary trie
 							while (curmag) // fills newnode with the extra magnitude
 							{
 								curnode->subMag();
+								--curmag;
 								newnode->addMag();
 							}
 							
@@ -462,7 +464,42 @@ class Triehard // compressed binary trie
 				}
 			}
 			
-			curnode->tFlag();
+			
+			// at this point, the node we are at needs to be flagged. However, there is an issue: this node may have magnitude remaining
+			// if this is the case, we need to split it up at curnode->getMag() - curmag. lets check for the easy case, then proceed
+			// with that logic if necessary
+			// basically curmag is our "extra" magnitude that needs to be sent along
+			if (!curmag)
+			{
+				curnode->tFlag();
+			}
+			else
+			{
+				Trienode * newnode = new Trienode(0, curnode->getMag()); // this is our new node, which should retain old flagging
+				curnode->tFlag(); // curnode will now end where we want to insert, so this should be true
+				
+				while (curmag) // fills newnode with the extra magnitude
+				{
+					curnode->subMag();
+					--curmag;
+					newnode->addMag();
+				}
+				
+				// now we create the newnode on the appropriate side
+				newnode->copyLeft(curnode->getLeft());
+				newnode->copyRight(curnode->getRight());
+				
+				if (side)
+				{
+					curnode->copyLeft(nullptr);
+					curnode->copyRight(newnode);
+				}
+				else
+				{
+					curnode->copyLeft(newnode);
+					curnode->copyRight(nullptr);
+				}
+			}
 		}
 		
 		void cut(int * val, int len) // this is delete because i can't use delete :(
