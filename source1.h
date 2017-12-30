@@ -162,10 +162,10 @@ class Triehard // compressed binary trie
 			if(right != nullptr)right->print(1);
 		} */
 		
-		// build an array of what is "processed" so far. then when a flag is hit, print that array. 
+		// build an array of what is "processed" so far. then when a flag is hit, print that array.
 		void mainPrint(Trienode * curnode, vector<int> * chars, int right)
 		{
-			if (!curnode) return;			
+			if (!curnode) return;
 			int curmag = curnode->getMag();
 			
 			while (curmag)
@@ -314,8 +314,8 @@ class Triehard // compressed binary trie
 		}
 		
 		void insert(int * val, int len) // assumes valid input
-		{						
-			Trienode * curnode;
+		{
+			Trienode * curnode; // this is what we are checking against our current value (i)
 			bool side; // represents if you are on the left or right (right being true)
 			if (val[0])
 			{
@@ -328,13 +328,13 @@ class Triehard // compressed binary trie
 				side = false;
 			}
 			
-			int curmag = curnode->getMag();
+			int curmag = curnode->getMag(); // remaining magnitude of the current node
 			
 			for (int i = 0; i < len; i++)
 			{
-				if (val[i]) // if next digit is 1
+				if (val[i]) // if current digit is 1
 				{
-					if (side) // if you're on the right
+					if (side) // if you're on the right (curnode represents a 1)
 					{
 						if (curmag) // if your current magnitude is >= 1 (still info "left" in this node)
 						{
@@ -347,12 +347,14 @@ class Triehard // compressed binary trie
 							curmag = curnode->getMag() - 1;
 							continue;
 						}
-						else if (!(curnode->getLeft())) // if there are no subtrees, just increase this node's magnitude
+						else if (!(curnode->getLeft()) && !(curnode->getFlag())) // if there are no subtrees, just increase this node's magnitude
+						// aha! can't do this if the node is flagged! if this node is flagged, then the magnitude must remain to retain
+						// information that there is a node of length curnode->getMag(). we need to branch off to the right if there is a flag
 						{
 							curnode->addMag();
 							continue;
 						}
-						else // we're on a "1" node, but it is depleted, and there is a left subtree. so, we create a new node to the right to represent this bit
+						else // we're on a "1" node, but it is depleted, and there is a left subtree. so, we create a new node to the right to represent this bit. this also handles if there are no subtrees BUT curnode is already flagged
 						{
 							curnode = curnode->setRight(1, false);
 							continue;
@@ -362,7 +364,7 @@ class Triehard // compressed binary trie
 					else // we're on a left subtree, but have a 1 coming up
 					{
 						if (curmag) // this means we have a value here, so we need to split this node up, branching to the right will be handled by following code
-						{						
+						{
 							Trienode * newnode = new Trienode(0, curnode->getFlag()); // this will be the second half of the big node
 							curnode->fFlag(); // this and the getFlag ensure the flag is transferred properly
 							
@@ -410,12 +412,13 @@ class Triehard // compressed binary trie
 							curmag = curnode->getMag() - 1;
 							continue;
 						}
-						else if (!(curnode->getRight())) // no subtrees and we're on the correct side, so add to this node's magnitude
+						else if (!(curnode->getRight()) && !(curnode->getFlag())) // no subtrees and we're on the correct side, so add to this node's magnitude
+						// same issue as before on the right side, have to make sure we aren't flagged
 						{
 							curnode->addMag();
 							continue;
 						}
-						else // no 0s remaining, no left subtree, and we are going to add one.
+						else // no 0s remaining || we are flagged, no left subtree, and we are going to add one.
 						{
 							curnode = curnode->setLeft(1, false);
 							continue;
@@ -424,7 +427,7 @@ class Triehard // compressed binary trie
 					else // we're on a right subtree but have a 0 coming up
 					{
 						if (curmag) // this means we have a value here, so we need to split this node up and branch to the left before this point
-						{						
+						{
 							Trienode * newnode = new Trienode(0, curnode->getFlag()); // this will be the second half of the big node
 							curnode->fFlag(); // this and the getFlag ensure the flag is transferred properly
 							
@@ -463,7 +466,7 @@ class Triehard // compressed binary trie
 		}
 		
 		void cut(int * val, int len) // this is delete because i can't use delete :(
-		{			
+		{
 			Trienode * curnode;
 			Trienode * prevnode = nullptr;
 			bool side; // represents if you are on the left or right (right being true)
