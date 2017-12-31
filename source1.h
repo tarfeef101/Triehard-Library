@@ -46,7 +46,7 @@ class Triehard // compressed binary trie
 					right = nullptr;
 				}
 				
-				~Trienode() // Unsure about syntax, if this will play nicely with delete method
+				~Trienode()
 				{
 					delete left;
 					delete right;
@@ -344,7 +344,7 @@ class Triehard // compressed binary trie
 						else if (curnode->getRight()) // If current node is "exhausted", move on to next one
 						{
 							curnode = curnode->getRight();
-							curmag = curnode->getMag() - 1;
+							curmag = curnode->getMag() - 1; // since mag >=1, we can assume this is valid
 							continue;
 						}
 						else if (!(curnode->getLeft()) && !(curnode->getFlag())) // if there are no subtrees, just increase this node's magnitude
@@ -355,6 +355,7 @@ class Triehard // compressed binary trie
 							continue;
 						}
 						else // we're on a "1" node, but it is depleted, and there is a left subtree. so, we create a new node to the right to represent this bit. this also handles if there are no subtrees BUT curnode is already flagged
+						// curmag is also 0, as we'll keep it as such since we're creating a new node of mag 1 and using it
 						{
 							curnode = curnode->setRight(1, false);
 							continue;
@@ -419,7 +420,7 @@ class Triehard // compressed binary trie
 							curnode->addMag();
 							continue;
 						}
-						else // no 0s remaining || we are flagged, no left subtree, and we are going to add one.
+						else // no 0s remaining || we are flagged, no left subtree, and we are going to create one.
 						{
 							curnode = curnode->setLeft(1, false);
 							continue;
@@ -475,7 +476,7 @@ class Triehard // compressed binary trie
 			}
 			else
 			{
-				Trienode * newnode = new Trienode(0, curnode->getMag()); // this is our new node, which should retain old flagging
+				Trienode * newnode = new Trienode(0, curnode->getFlag()); // this is our new node, which should retain old flagging
 				curnode->tFlag(); // curnode will now end where we want to insert, so this should be true
 				
 				while (curmag) // fills newnode with the extra magnitude
