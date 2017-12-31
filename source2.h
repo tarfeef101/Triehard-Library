@@ -1,6 +1,7 @@
 #ifndef __source1_H__
 #define __source1_H__
 #include <iostream>
+#include <vector>
 using namespace std;
 class Triehard2 // compressed binary trie
 // constructor should make a left and right that are empty for search to work
@@ -172,7 +173,7 @@ class Triehard2 // compressed binary trie
 		}*/
 		
 		// build an array of what is "processed" so far. then when a flag is hit, print that array.
-		void mainPrint(Trienode * curnode, vector<int> * chars, int right)
+		void mainPrint(Trienode2 * curnode, vector<int> * chars, int right)
 		{
 			if (!curnode) return;
 			int curmag = curnode->getMag();
@@ -486,7 +487,7 @@ class Triehard2 // compressed binary trie
 			}
 			else
 			{
-				Trienode * newnode = new Trienode(0, curnode->getCount()); // this is our new node, which should retain old flagging
+				Trienode2 * newnode = new Trienode2(0, curnode->getCount()); // this is our new node, which should retain old flagging
 				curnode->setCount(1); // curnode will now end where we want to insert, so this should be true
 				
 				while (curmag) // fills newnode with the extra magnitude
@@ -647,7 +648,7 @@ class Triehard2 // compressed binary trie
 			}
 			
 			curnode->subCount(); // Normally this is all that is necessary
-			if (curnode->getCount) return; // This means we aren't removing a node, so no compression is possible
+			if (curnode->getCount()) return; // This means we aren't removing a node, so no compression is possible
 			
 			// Cases where nodes have to be removed/compressed
 			if (!(curnode->getLeft()) && !(curnode->getRight())) // if our node has no children, destroy it and change parent's reference to NULL
