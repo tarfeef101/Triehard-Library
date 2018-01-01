@@ -323,7 +323,12 @@ class Triehard2 // compressed binary trie
 				}
 			}
 			
-			return curnode->getCount();
+			if (!curmag)
+			{
+				return curnode->getCount();
+			}
+			
+			return 0;
 		}
 		
 		void insert(int * val, int len) // assumes valid input

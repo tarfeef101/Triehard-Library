@@ -27,9 +27,17 @@ int main()
 	cout << "success! inserted b" << endl;
 	test->myPrintIsBetterThanYoursLogan();
 	cout << "Print Done!" << endl;
+	cout << "Search result for 10110: " << test->search(y, 5) << endl;
 	test->cut(y, 5);
 	cout << "success! cut y" << endl;
 	test->myPrintIsBetterThanYoursLogan();
+	cout << "Search result for 10110: " << test->search(y, 5) << endl;
+	test->cut(y, 5);
+	cout << "success! cut y" << endl;
+	test->cut(y, 5);
+	cout << "success! cut y" << endl;
+	test->myPrintIsBetterThanYoursLogan();
+	cout << "Search result for 10110: " << test->search(y, 5) << endl;
 	delete test;
 	cout << "success! Completed test" << endl;
 	//while(1);

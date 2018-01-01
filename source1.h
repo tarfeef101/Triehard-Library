@@ -310,7 +310,7 @@ class Triehard // compressed binary trie
 				}
 			}
 			
-			return curnode->getFlag();
+			return curnode->getFlag() && !curmag;
 		}
 		
 		void insert(int * val, int len) // assumes valid input
@@ -524,7 +524,6 @@ class Triehard // compressed binary trie
 			
 			int curmag = curnode->getMag();
 			
-			cout << "loop starting" << endl;
 			for (int i = 0; i < len; i++) // each iteration checks the current character for accuracy. it does not prepare for the next character like the preamble
 			{
 				if (val[i]) // if next digit is 1
