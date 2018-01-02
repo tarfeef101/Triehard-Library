@@ -1,0 +1,14 @@
+Notes/To Do:
+
+1) replace sending in strings of binary and lengths with:
+	a) only should need source2 for binary data, no need to not have the functionality it provides
+	b) any source should allow no length being provided, just a string
+	c) one source should allow storage of ASCII strings, converting to binary in the backend
+	d) want a measure of compression
+		i) formula: nodes vs nodes in a normal trie
+		ii) formula: nodes vs total binary characters of all strings being stored (raw)
+2) error handling
+	a) throw error for deleting stuff that's not there
+	b) check/handle (and throw) when you cannot allocate space to do an operation
+	c) throw error for invalid input to functions
+		i) invalid characters in strings

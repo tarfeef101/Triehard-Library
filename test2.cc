@@ -11,6 +11,7 @@ int main()
 	int z[1] = {0};
 	int a[7] = {1,0,1,1,0,0,0};
 	int b[7] = {0,1,1,0,0,1,1};
+	cout << "Search result for searching 010: " << test->search(x, 3) << endl;
 	test->insert(x, 3);
 	cout << "success! inserted x" << endl;
 	test->insert(a, 7);
