@@ -1,10 +1,10 @@
 Notes/To Do:
 
 1) replace sending in strings of binary and lengths with:
-	a) only should need source2 for binary data, no need to not have the functionality it provides
-	b) any source should allow no length being provided, just a string
+	a) only should need source2 for binary data, no need to not have the functionality it provides (replaced source1 with in-progress build)
+	b) any source should allow no length being provided, just a string (done in source1 with vectors)
 	c) one source should allow storage of ASCII strings, converting to binary in the backend
-	d) want a measure of compression
+	d) want a measure of compression (in progress in source1)
 		i) formula: nodes vs nodes in a normal trie
 		ii) formula: nodes vs total binary characters of all strings being stored (raw)
 2) error handling

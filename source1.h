@@ -2,11 +2,13 @@
 #define __source1_H__
 #include <iostream>
 #include <vector>
+#include <math.h>
 using namespace std;
 class Triehard // compressed binary trie
 // constructor should make a left and right that are empty for search to work
 // magnitude is 1 for length 1, so it must be >= 1
-// flag means the value ending there is being stored
+// no more flag, instead we have a count field which counts the number of instances
+// the node represents. A small change, but much more functionality
 {
 	private:
 	
@@ -15,7 +17,7 @@ class Triehard // compressed binary trie
 			private:
 				
 				int magnitude;
-				bool flag;
+				int count;
 				Trienode * left;
 				Trienode * right;
 				
@@ -34,13 +36,12 @@ class Triehard // compressed binary trie
 					}
 					
 					return output;
-				}
-				*/
+				}*/
 				
 			public:
 			
-				Trienode(int magnitude, bool flag):
-				magnitude{magnitude}, flag{flag}
+				Trienode(int magnitude, int count):
+				magnitude{magnitude}, count{count}
 				{
 					left = nullptr;
 					right = nullptr;
@@ -57,9 +58,9 @@ class Triehard // compressed binary trie
 					return magnitude;
 				}
 
-				bool getFlag()
+				int getCount()
 				{
-					return flag;
+					return count;
 				}
 				
 				/*
@@ -68,7 +69,7 @@ class Triehard // compressed binary trie
 				{
 					string val = getNodeVal(side);
 					
-					if(getFlag())
+					if(getCount())
 					{
 						cout << output + val << endl;
 					}
@@ -102,25 +103,35 @@ class Triehard // compressed binary trie
 					--magnitude;
 				}
 				
-				void tFlag()
+				void addCount()
 				{
-					flag = true;
+					++count;
 				}
 				
-				void fFlag()
+				void subCount()
 				{
-					flag = false;
+					--count;
 				}
 				
-				Trienode * setLeft(int mag, bool flg)
+				void zeroCount()
 				{
-					left = new Trienode(mag, flg);
+					count = 0;
+				}
+				
+				void setCount(int x)
+				{
+					count = x;
+				}
+				
+				Trienode * setLeft(int mag, int cnt)
+				{
+					left = new Trienode(mag, cnt);
 					return left;
 				}
 				
-				Trienode * setRight(int mag, bool flg)
+				Trienode * setRight(int mag, int cnt)
 				{
-					right = new Trienode(mag, flg);
+					right = new Trienode(mag, cnt);
 					return right;
 				}
 				
@@ -142,8 +153,8 @@ class Triehard // compressed binary trie
 	
 		Triehard() // Initializes both sides as empty, but makes it searchable, mutatable
 		{
-			left = new Trienode(0, false);
-			right = new Trienode(0, false);
+			left = new Trienode(0, 0);
+			right = new Trienode(0, 0);
 		}
 		
 		~Triehard() // Same concern (syntax) as nodes, don't forget to write an erase method as well, maybe an empty/wipe
@@ -160,13 +171,14 @@ class Triehard // compressed binary trie
 			//function, try to fix later perhaps?
 			if(left != nullptr)left->print(0);
 			if(right != nullptr)right->print(1);
-		} */
+		}*/
 		
 		// build an array of what is "processed" so far. then when a flag is hit, print that array.
 		void mainPrint(Trienode * curnode, vector<int> * chars, int right)
 		{
 			if (!curnode) return;
 			int curmag = curnode->getMag();
+			int curcount = curnode->getCount();
 			
 			while (curmag)
 			{
@@ -174,7 +186,7 @@ class Triehard // compressed binary trie
 				--curmag;
 			}
 			
-			if (curnode->getFlag())
+			while (curcount)
 			{
 				int len = chars->size();
 				
@@ -183,7 +195,9 @@ class Triehard // compressed binary trie
 					cout << (*chars)[i] << " ";
 				}
 				cout << endl;
+				--curcount;
 			}
+			
 			mainPrint(curnode->getLeft(), chars, 0);
 			mainPrint(curnode->getRight(), chars, 1);
 			curmag = curnode->getMag();
@@ -206,11 +220,11 @@ class Triehard // compressed binary trie
 			delete side2;
 		}
 		
-		bool search(int * val, int len) // val is the string, len is its length
+		int search(vector<int> * val) // val is the string
 		{
 			Trienode * curnode;
 			bool side; // represents if you are on the left or right (right being true)
-			if (val[0])
+			if (*val[0])
 			{
 				curnode = right;
 				side = true;
@@ -223,9 +237,9 @@ class Triehard // compressed binary trie
 			
 			int curmag = curnode->getMag();
 			
-			for (int i = 0; i < len; i++) // each iteration checks the current character for accuracy. it does not prepare for the next character like the preamble
+			for (int i = 0; i < val->size(); i++) // each iteration checks the current character for accuracy. it does not prepare for the next character like the preamble
 			{
-				if (val[i]) // if next digit is 1
+				if (*val[i]) // if next digit is 1
 				{
 					if (side) // if you're on the right
 					{
@@ -243,7 +257,7 @@ class Triehard // compressed binary trie
 						}
 						else
 						{
-							return false;
+							return 0;
 						}
 						
 					}
@@ -251,7 +265,7 @@ class Triehard // compressed binary trie
 					{
 						if (curmag)
 						{
-							return false;
+							return 0;
 						}
 						
 						if (curnode->getRight())
@@ -263,7 +277,7 @@ class Triehard // compressed binary trie
 						}
 						else
 						{
-							return false;
+							return 0;
 						}
 					}
 				}
@@ -285,14 +299,14 @@ class Triehard // compressed binary trie
 						}
 						else
 						{
-							return false;
+							return 0;
 						}
 					}
 					else
 					{
 						if (curmag)
 						{
-							return false;
+							return 0;
 						}
 						
 						if (curnode->getLeft())
@@ -304,20 +318,25 @@ class Triehard // compressed binary trie
 						}
 						else
 						{
-							return false;
+							return 0;
 						}
 					}
 				}
 			}
 			
-			return curnode->getFlag() && !curmag;
+			if (!curmag)
+			{
+				return curnode->getCount();
+			}
+			
+			return 0;
 		}
 		
-		void insert(int * val, int len) // assumes valid input
+		void insert(vector<int> * val, int len) // assumes valid input
 		{
-			Trienode * curnode; // this is what we are checking against our current value (i)
+			Trienode * curnode; // the node we are checking against our current value
 			bool side; // represents if you are on the left or right (right being true)
-			if (val[0])
+			if (*val[0])
 			{
 				curnode = right;
 				side = true;
@@ -328,13 +347,13 @@ class Triehard // compressed binary trie
 				side = false;
 			}
 			
-			int curmag = curnode->getMag(); // remaining magnitude of the current node
+			int curmag = curnode->getMag(); // "remaining" magnitude of the current node
 			
-			for (int i = 0; i < len; i++)
+			for (int i = 0; i < val->size(); i++)
 			{
-				if (val[i]) // if current digit is 1
+				if (*val[i]) // if current digit is 1
 				{
-					if (side) // if you're on the right (curnode represents a 1)
+					if (side) // if you're on the right
 					{
 						if (curmag) // if your current magnitude is >= 1 (still info "left" in this node)
 						{
@@ -344,20 +363,19 @@ class Triehard // compressed binary trie
 						else if (curnode->getRight()) // If current node is "exhausted", move on to next one
 						{
 							curnode = curnode->getRight();
-							curmag = curnode->getMag() - 1; // since mag >=1, we can assume this is valid
+							curmag = curnode->getMag() - 1;
 							continue;
 						}
-						else if (!(curnode->getLeft()) && !(curnode->getFlag())) // if there are no subtrees, just increase this node's magnitude
-						// aha! can't do this if the node is flagged! if this node is flagged, then the magnitude must remain to retain
-						// information that there is a node of length curnode->getMag(). we need to branch off to the right if there is a flag
+						else if (!(curnode->getLeft()) && !(curnode->getCount())) // if there are no subtrees, just increase this node's magnitude
+						// also can't do that if the node is flagged, since it needs to retain that info, so check for this
 						{
 							curnode->addMag();
 							continue;
 						}
-						else // we're on a "1" node, but it is depleted, and there is a left subtree. so, we create a new node to the right to represent this bit. this also handles if there are no subtrees BUT curnode is already flagged
-						// curmag is also 0, as we'll keep it as such since we're creating a new node of mag 1 and using it
+						else // we're on a "1" node, but it is depleted, and there is a left subtree. so, we create a new node to the right to represent this bit
+						// also works if the node is flagged and we just need a new node to represent the unflagged set of 1s
 						{
-							curnode = curnode->setRight(1, false);
+							curnode = curnode->setRight(1, 0);
 							continue;
 						}
 						
@@ -366,8 +384,8 @@ class Triehard // compressed binary trie
 					{
 						if (curmag) // this means we have a value here, so we need to split this node up, branching to the right will be handled by following code
 						{
-							Trienode * newnode = new Trienode(0, curnode->getFlag()); // this will be the second half of the big node
-							curnode->fFlag(); // this and the getFlag ensure the flag is transferred properly
+							Trienode * newnode = new Trienode(0, curnode->getCount()); // this will be the second half of the big node
+							curnode->zeroCount(); // this and the passing of the count into newnode ensure count is not lost
 							
 							while (curmag) // fills newnode with the extra magnitude
 							{
@@ -393,7 +411,7 @@ class Triehard // compressed binary trie
 						else // we are on left, it is empty, and the right side is empty. create and set that node to curnode->
 						{
 							SKIP1:
-							curnode = curnode->setRight(1, false);
+							curnode = curnode->setRight(1, 0);
 							side = true;
 							continue;
 						}
@@ -414,15 +432,15 @@ class Triehard // compressed binary trie
 							curmag = curnode->getMag() - 1;
 							continue;
 						}
-						else if (!(curnode->getRight()) && !(curnode->getFlag())) // no subtrees and we're on the correct side, so add to this node's magnitude
-						// same issue as before on the right side, have to make sure we aren't flagged
+						else if (!(curnode->getRight()) && !(curnode->getCount())) // no subtrees and we're on the correct side, so add to this node's magnitude
+						// only if this node isn't flagged, since we must retain that info
 						{
 							curnode->addMag();
 							continue;
 						}
-						else // no 0s remaining || we are flagged, no left subtree, and we are going to create one.
+						else // no 0s remaining || we are flagged, no left subtree, and we are going to add one.
 						{
-							curnode = curnode->setLeft(1, false);
+							curnode = curnode->setLeft(1, 0);
 							continue;
 						}
 					}
@@ -430,8 +448,8 @@ class Triehard // compressed binary trie
 					{
 						if (curmag) // this means we have a value here, so we need to split this node up and branch to the left before this point
 						{
-							Trienode * newnode = new Trienode(0, curnode->getFlag()); // this will be the second half of the big node
-							curnode->fFlag(); // this and the getFlag ensure the flag is transferred properly
+							Trienode * newnode = new Trienode(0, curnode->getCount()); // this will be the second half of the big node
+							curnode->zeroCount(); // This and the passing of getCount to newnode ensure count is not lost
 							
 							while (curmag) // fills newnode with the extra magnitude
 							{
@@ -457,7 +475,7 @@ class Triehard // compressed binary trie
 						else // we are on right, it is empty, and the left side is empty. create and set that node to curnode->
 						{
 							SKIP2:
-							curnode = curnode->setLeft(1, false);
+							curnode = curnode->setLeft(1, 0);
 							side = false;
 							continue;
 						}
@@ -465,19 +483,18 @@ class Triehard // compressed binary trie
 				}
 			}
 			
-			
 			// at this point, the node we are at needs to be flagged. However, there is an issue: this node may have magnitude remaining
 			// if this is the case, we need to split it up at curnode->getMag() - curmag. lets check for the easy case, then proceed
 			// with that logic if necessary
 			// basically curmag is our "extra" magnitude that needs to be sent along
 			if (!curmag)
 			{
-				curnode->tFlag();
+				curnode->addCount();
 			}
 			else
 			{
-				Trienode * newnode = new Trienode(0, curnode->getFlag()); // this is our new node, which should retain old flagging
-				curnode->tFlag(); // curnode will now end where we want to insert, so this should be true
+				Trienode * newnode = new Trienode(0, curnode->getCount()); // this is our new node, which should retain old flagging
+				curnode->setCount(1); // curnode will now end where we want to insert, so this should be true
 				
 				while (curmag) // fills newnode with the extra magnitude
 				{
@@ -503,13 +520,13 @@ class Triehard // compressed binary trie
 			}
 		}
 		
-		void cut(int * val, int len) // this is delete because i can't use delete :(
+		void cut(vector<int> * val, int len) // this is delete because i can't use delete :(
 		{
 			Trienode * curnode;
 			Trienode * prevnode = nullptr;
 			bool side; // represents if you are on the left or right (right being true)
 			bool side2; // previous node's side
-			if (val[0])
+			if (*val[0])
 			{
 				curnode = right;
 				side = true;
@@ -524,9 +541,9 @@ class Triehard // compressed binary trie
 			
 			int curmag = curnode->getMag();
 			
-			for (int i = 0; i < len; i++) // each iteration checks the current character for accuracy. it does not prepare for the next character like the preamble
+			for (int i = 0; i < val->size(); i++) // each iteration checks the current character for accuracy. it does not prepare for the next character like the preamble
 			{
-				if (val[i]) // if next digit is 1
+				if (*val[i]) // if next digit is 1
 				{
 					if (side) // if you're on the right
 					{
@@ -626,18 +643,21 @@ class Triehard // compressed binary trie
 			{
 				if (side)
 				{
-					right->fFlag();
+					right->subCount();
 				}
 				else
 				{
-					left->fFlag();
+					left->subCount();
 				}
+				
+				return;
 			}
-			else if (curnode->getLeft() && curnode->getRight()) // we have shit to both sides, just unflag
-			{
-				curnode->fFlag();
-			}
-			else if (!(curnode->getLeft()) && !(curnode->getRight())) // if our node has no children, destroy it and change parent's reference to NULL
+			
+			curnode->subCount(); // Normally this is all that is necessary
+			if (curnode->getCount()) return; // This means we aren't removing a node, so no compression is possible
+			
+			// Cases where nodes have to be removed/compressed
+			if (!(curnode->getLeft()) && !(curnode->getRight())) // if our node has no children, destroy it and change parent's reference to NULL
 			{
 				if (side)
 				{
@@ -646,11 +666,11 @@ class Triehard // compressed binary trie
 				}
 				else
 				{
-					delete curnode; // do not finish this step
+					delete curnode;
 					prevnode->copyLeft(nullptr);
 				}
 			}
-			else if (side && curnode->getLeft() && prevnode->getLeft() && side2 && !(prevnode->getFlag()) && !(prevnode->getLeft()))
+			else if (side && curnode->getLeft() && prevnode->getLeft() && side2 && !(prevnode->getCount()) && !(prevnode->getLeft()))
 			// we are on the right, we have shit to the left, and the parent has nothing to the left, and is not flagged
 			// this is a rare case where we do have to compress
 			{
@@ -665,7 +685,7 @@ class Triehard // compressed binary trie
 					prevnode->copyRight(nullptr);
 					delete curnode;
 			}
-			else if (!(side) && curnode->getRight() && prevnode->getRight() && !(side2) && !(prevnode->getFlag()) && !(prevnode->getRight()))
+			else if (!(side) && curnode->getRight() && prevnode->getRight() && !(side2) && !(prevnode->getCount()) && !(prevnode->getRight()))
 			// we are on the left, we have shit to the right, and the parent has nothing to the right, and is not flagged
 			// the same rare case as above
 			{
@@ -680,11 +700,6 @@ class Triehard // compressed binary trie
 					prevnode->copyLeft(nullptr);
 					delete curnode;
 			}
-			else if ((side && curnode->getLeft()) || (!(side) && curnode->getRight()))
-			// we are to the right and have shit to the left or vice versa
-			{
-				curnode->fFlag();
-			}
 			else if (side) // we are on the right and have shit to the right
 			{
 				Trienode * child = curnode->getRight();
@@ -694,8 +709,7 @@ class Triehard // compressed binary trie
 					curnode->addMag();
 				}
 				
-				if (child->getFlag()) curnode->tFlag(); // Sets flag based on child
-				else curnode->fFlag();
+				curnode->setCount(child->getCount()); // Sets count to child's count
 				
 				curnode->copyLeft(child->getLeft()); // moves child's children to our parent node
 				curnode->copyRight(child->getRight());
@@ -712,8 +726,7 @@ class Triehard // compressed binary trie
 					curnode->addMag();
 				}
 				
-				if (child->getFlag()) curnode->tFlag(); // Sets flag based on child
-				else curnode->fFlag();
+				curnode->setCount(child->getCount()); // Sets count to child's count
 				
 				curnode->copyLeft(child->getLeft()); // moves child's children to our parent node
 				curnode->copyRight(child->getRight());
@@ -722,6 +735,39 @@ class Triehard // compressed binary trie
 				delete child;
 			}
 		}
+    
+    // update counter with children recursively
+		void mainCount(Trienode * curnode, int len, int right, int * counter)
+		{
+			if (!curnode) return;
+      len += curnode->getMag();		
+			*counter += (len * curnode->getCount());
+			
+			mainCount(curnode->getLeft(), len, 0, counter);
+			mainCount(curnode->getRight(), len, 1, counter);
+		}
+		
+		int countChars() // returns total word length of trie
+		{
+      int counter = 0;
+			mainCount(left, 0, 0, &counter);
+			mainCount(right, 0, 1, &counter);
+      return counter;
+		}
+    
+    float compressionovertrie() // returns nodes / nodes in a normal trie
+		{
+      float total = left->sumMag() + right->sumMag();
+      float compressed = left->sumCount() + right->sumCount();
+      return roundf(compressed/total * 100) / 100;
+		}
+    
+    float compressionoverdict() // returns nodes / sum of all word length
+    {
+      float compressed = left->sumCount() + right->sumCount();
+      float total = countChars();
+      return roundf(compressed/total * 100) / 100;
+      
 };
 
 #endif
