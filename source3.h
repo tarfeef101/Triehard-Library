@@ -18,46 +18,25 @@ class Triehard // compressed decimal trie
 				
 				int magnitude;
 				int count;
-				Trienode * one;
-				Trienode * two;
-				Trienode * three;
-				Trienode * four;
-				Trienode * five;
-				Trienode * six;
-				Trienode * seven;
-				Trienode * eight;
-				Trienode * nine;
-				Trienode * ten;
+				vector<Trienode *> children(10);
 				
 			public:
 			
 				Trienode(int magnitude, int count):
 				magnitude{magnitude}, count{count}
 				{
-					one = nullptr;
-					two = nullptr;
-					three = nullptr;
-					four = nullptr;
-					five = nullptr;
-					six = nullptr;
-					seven = nullptr;
-					eight = nullptr;
-					nine = nullptr;
-					ten = nullptr;
+					for (int i = 0; i < 10; ++i)
+					{
+						children[i] = nullptr;
+					}
 				}
 				
 				~Trienode()
 				{
-					delete one;
-					delete two;
-					delete three;
-					delete four;
-					delete five;
-					delete six;
-					delete seven;
-					delete eight;
-					delete nine;
-					delete ten;
+					for (int i = 0; i < 10; ++i)
+					{
+						delete children[i];
+					}
 				}
 			
 				int getMag()
@@ -70,54 +49,9 @@ class Triehard // compressed decimal trie
 					return count;
 				}
 				
-				Trienode * getOne()
+				Trienode * getX(int x)
 				{
-					return one;
-				}
-				
-				Trienode * getTwo()
-				{
-					return two;
-				}
-				
-				Trienode * getThree()
-				{
-					return three;
-				}
-				
-				Trienode * getFour()
-				{
-					return four;
-				}
-				
-				Trienode * getFive()
-				{
-					return five;
-				}
-				
-				Trienode * getSix()
-				{
-					return six;
-				}
-				
-				Trienode * getSeven()
-				{
-					return seven;
-				}
-				
-				Trienode * getEight()
-				{
-					return eight;
-				}
-				
-				Trienode * getNine()
-				{
-					return nine;
-				}
-				
-				Trienode * getTen()
-				{
-					return ten;
+					return children[x];
 				}
 				
 				void addMag()
@@ -150,130 +84,39 @@ class Triehard // compressed decimal trie
 					count = x;
 				}
 				
-				Trienode * setOne(int mag, int cnt)
+				Trienode * setX(int x, int mag, int cnt)
 				{
-					one = new Trienode(mag, cnt);
-					return one;
+					children[x] = new Trienode(mag, cnt);
+					return children[x];
 				}
 				
-				Trienode * setTwo(int mag, int cnt)
+				void copyX(int x, Trienode * node)
 				{
-					two = new Trienode(mag, cnt);
-					return two;
-				}
-				
-				Trienode * setThree(int mag, int cnt)
-				{
-					three = new Trienode(mag, cnt);
-					return three;
-				}
-				
-				Trienode * setFour(int mag, int cnt)
-				{
-					four = new Trienode(mag, cnt);
-					return four;
-				}
-				
-				Trienode * setFive(int mag, int cnt)
-				{
-					five = new Trienode(mag, cnt);
-					return five;
-				}
-				
-				Trienode * setSix(int mag, int cnt)
-				{
-					six = new Trienode(mag, cnt);
-					return six;
-				}
-				
-				Trienode * setSeven(int mag, int cnt)
-				{
-					seven = new Trienode(mag, cnt);
-					return seven;
-				}
-				
-				Trienode * setEight(int mag, int cnt)
-				{
-					eight = new Trienode(mag, cnt);
-					return eight;
-				}
-				
-				Trienode * setNine(int mag, int cnt)
-				{
-					nine = new Trienode(mag, cnt);
-					return nine;
-				}
-				
-				Trienode * setTen(int mag, int cnt)
-				{
-					ten = new Trienode(mag, cnt);
-					return ten;
-				}
-				
-				void copyOne(Trienode * node)
-				{
-					one = node;
-				}
-				
-				void copyTwo(Trienode * node)
-				{
-					two = node;
-				}
-				
-				void copyThree(Trienode * node)
-				{
-					three = node;
-				}
-				
-				void copyFour(Trienode * node)
-				{
-					four = node;
-				}
-				
-				void copyFive(Trienode * node)
-				{
-					five = node;
-				}
-				
-				void copySix(Trienode * node)
-				{
-					six = node;
-				}
-				
-				void copySeven(Trienode * node)
-				{
-					seven = node;
-				}
-				
-				void copyEight(Trienode * node)
-				{
-					eight = node;
-				}
-				
-				void copyNine(Trienode * node)
-				{
-					nine = node;
-				}
-				
-				void copyTen(Trienode * node)
-				{
-					ten = node;
+					children[x] = node;
 				}
 				
 				int sumMag()
 				{
-					if (left && right) return magnitude + left->sumMag() + right->sumMag();
-					if (left) return magnitude + left->sumMag();
-					if (right) return magnitude + right->sumMag();
-					return magnitude;
+					int result = magnitude;
+					
+					for (int i = 0; i < 10; ++i)
+					{
+						if (children[i]) result += children[i]->sumMag();
+					}
+					
+					return result;
 				}
     
     			int sumCount()
     			{
-    				if (left && right) return 1 + left->sumCount() + right->sumCount();
-    				if (left) return 1 + left->sumCount();
-    				if (right) return 1 + right->sumCount();
-    				return 1;
+    				int result = 1;
+					
+					for (int i = 0; i < 10; ++i)
+					{
+						if (children[i]) result += children[i]->sumCount();
+					}
+					
+					return result;
     			}
 		};
 		
@@ -324,10 +167,8 @@ class Triehard // compressed decimal trie
 			
 			for (int i = 0; i < 10; ++i)
 			{
-				mainPrint()
+				mainPrint(children[i], chars, i)
 			}
-			mainPrint(curnode->getLeft(), chars, 0);
-			mainPrint(curnode->getRight(), chars, 1);
 			curmag = curnode->getMag();
 			
 			while (curmag)
@@ -349,104 +190,46 @@ class Triehard // compressed decimal trie
 		
 		int search(vector<int> * val) // val is the string
 		{
-			Trienode * curnode;
-			bool side; // represents if you are on the left or right (right being true)
-			if ((*val)[0])
-			{
-				curnode = right;
-				side = true;
-			}
-			else
-			{
-				curnode  = left;
-				side = false;
-			}
-			
+			Trienode * curnode = nodes[(*val)[0]];
+			int pos = (*val)[0]; // represents what value your current node is
 			int curmag = curnode->getMag();
 			
 			for (int i = 0; i < val->size(); i++) // each iteration checks the current character for accuracy. it does not prepare for the next character like the preamble
 			{
-				if ((*val)[i]) // if next digit is 1
+				if ((*val)[i] == pos) // if we are on the correct node already
 				{
-					if (side) // if you're on the right
+					if (curmag) // if your current magnitude is >= 1 (still info "left" in this node)
 					{
-						if (curmag) // if your current magnitude is >= 1 (still info "left" in this node)
-						{
-							--curmag;
-							continue;
-						}
-						
-						if (curnode->getRight()) // If current node is "exhausted", move on to next one
-						{
-							curnode = curnode->getRight();
-							curmag = curnode->getMag() - 1;
-							continue;
-						}
-						else
-						{
-							return 0;
-						}
-						
+						--curmag;
+						continue;
+					}
+					
+					if (curnode->getX(pos)) // if our current node is exhausted, move on to the next one
+					{
+						curnode = curnode->getX(pos);
+						curmag = curnode->getMag() - 1;
+						continue;
 					}
 					else
 					{
-						if (curmag)
-						{
-							return 0;
-						}
-						
-						if (curnode->getRight())
-						{
-							curnode = curnode->getRight();
-							curmag = curnode->getMag() - 1;
-							side = true;
-							continue;
-						}
-						else
-						{
-							return 0;
-						}
+						return 0;
 					}
 				}
-				else
+				else // we are not on the right node
 				{
-					if (!side)
+					if (curmag) // if we have magnitude left
 					{
-						if (curmag)
-						{
-							--curmag;
-							continue;
-						}
-						
-						if (curnode->getLeft())
-						{
-							curnode = curnode->getLeft();
-							curmag = curnode->getMag() - 1;
-							continue;
-						}
-						else
-						{
-							return 0;
-						}
+						return 0;
 					}
-					else
+					else if (curnode->getX(pos)) // if our child for that # exists
 					{
-						if (curmag)
-						{
-							return 0;
-						}
-						
-						if (curnode->getLeft())
-						{
-							curnode = curnode->getLeft();
-							curmag = curnode->getMag() - 1;
-							side = false;
-							continue;
-						}
-						else
-						{
-							return 0;
-						}
+						curnode = curnode->getX(pos);
+						curmag = curnode->getMag() - 1;
+						continue;
+					}
+					else // we don't have the child, must be absent
+					{
+						return 0;
 					}
 				}
 			}
@@ -459,6 +242,7 @@ class Triehard // compressed decimal trie
 			return 0;
 		}
 		
+		// START WORK HERE
 		void insert(vector<int> * val) // assumes valid input
 		{
 			Trienode * curnode; // the node we are checking against our current value
