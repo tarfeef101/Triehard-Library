@@ -1,55 +1,63 @@
-#ifndef __source2_H__
-#define __source2_H__
+#ifndef __source3_H__
+#define __source3_H__
 #include <iostream>
 #include <vector>
+#include <math.h>
 using namespace std;
-class Triehard2 // compressed binary trie
-// constructor should make a left and right that are empty for search to work
+class Triehard // compressed decimal trie
+// constructor should make 1-10 base nodes that are empty for search to work
 // magnitude is 1 for length 1, so it must be >= 1
 // no more flag, instead we have a count field which counts the number of instances
 // the node represents. A small change, but much more functionality
 {
 	private:
 	
-		class Trienode2
+		class Trienode
 		{
 			private:
 				
 				int magnitude;
 				int count;
-				Trienode2 * left;
-				Trienode2 * right;
-				
-				/*
-				//Convenient method for printing.
-				//Returns a string to be able to chain
-				//printing more easily.
-				//Side is either 0 (left), or 1 (right)
-				string getNodeVal(int side)
-				{
-					string output = "";
-					
-					for(int i = 0; i < magnitude; ++i)
-					{
-						output += to_string(side);
-					}
-					
-					return output;
-				}*/
+				Trienode * one;
+				Trienode * two;
+				Trienode * three;
+				Trienode * four;
+				Trienode * five;
+				Trienode * six;
+				Trienode * seven;
+				Trienode * eight;
+				Trienode * nine;
+				Trienode * ten;
 				
 			public:
 			
-				Trienode2(int magnitude, int count):
+				Trienode(int magnitude, int count):
 				magnitude{magnitude}, count{count}
 				{
-					left = nullptr;
-					right = nullptr;
+					one = nullptr;
+					two = nullptr;
+					three = nullptr;
+					four = nullptr;
+					five = nullptr;
+					six = nullptr;
+					seven = nullptr;
+					eight = nullptr;
+					nine = nullptr;
+					ten = nullptr;
 				}
 				
-				~Trienode2()
+				~Trienode()
 				{
-					delete left;
-					delete right;
+					delete one;
+					delete two;
+					delete three;
+					delete four;
+					delete five;
+					delete six;
+					delete seven;
+					delete eight;
+					delete nine;
+					delete ten;
 				}
 			
 				int getMag()
@@ -62,34 +70,54 @@ class Triehard2 // compressed binary trie
 					return count;
 				}
 				
-				/*
-				//Side is 0 (left) or 1 (right)
-				void print(int side, string output = "")
+				Trienode * getOne()
 				{
-					string val = getNodeVal(side);
-					
-					if(getCount())
-					{
-						cout << output + val << endl;
-					}
-					if(left != nullptr)
-					{
-						left->print(0, output + val);
-					}
-					if(right != nullptr)
-					{
-						right->print(1, output + val);
-					}
-				}*/
-				
-				Trienode2 * getLeft()
-				{
-					return left;
+					return one;
 				}
 				
-				Trienode2 * getRight()
+				Trienode * getTwo()
 				{
-					return right;
+					return two;
+				}
+				
+				Trienode * getThree()
+				{
+					return three;
+				}
+				
+				Trienode * getFour()
+				{
+					return four;
+				}
+				
+				Trienode * getFive()
+				{
+					return five;
+				}
+				
+				Trienode * getSix()
+				{
+					return six;
+				}
+				
+				Trienode * getSeven()
+				{
+					return seven;
+				}
+				
+				Trienode * getEight()
+				{
+					return eight;
+				}
+				
+				Trienode * getNine()
+				{
+					return nine;
+				}
+				
+				Trienode * getTen()
+				{
+					return ten;
 				}
 				
 				void addMag()
@@ -122,58 +150,155 @@ class Triehard2 // compressed binary trie
 					count = x;
 				}
 				
-				Trienode2 * setLeft(int mag, int cnt)
+				Trienode * setOne(int mag, int cnt)
 				{
-					left = new Trienode2(mag, cnt);
-					return left;
+					one = new Trienode(mag, cnt);
+					return one;
 				}
 				
-				Trienode2 * setRight(int mag, int cnt)
+				Trienode * setTwo(int mag, int cnt)
 				{
-					right = new Trienode2(mag, cnt);
-					return right;
+					two = new Trienode(mag, cnt);
+					return two;
 				}
 				
-				void copyLeft(Trienode2 * node)
+				Trienode * setThree(int mag, int cnt)
 				{
-					left = node;
+					three = new Trienode(mag, cnt);
+					return three;
 				}
 				
-				void copyRight(Trienode2 * node)
+				Trienode * setFour(int mag, int cnt)
 				{
-					right = node;
+					four = new Trienode(mag, cnt);
+					return four;
 				}
+				
+				Trienode * setFive(int mag, int cnt)
+				{
+					five = new Trienode(mag, cnt);
+					return five;
+				}
+				
+				Trienode * setSix(int mag, int cnt)
+				{
+					six = new Trienode(mag, cnt);
+					return six;
+				}
+				
+				Trienode * setSeven(int mag, int cnt)
+				{
+					seven = new Trienode(mag, cnt);
+					return seven;
+				}
+				
+				Trienode * setEight(int mag, int cnt)
+				{
+					eight = new Trienode(mag, cnt);
+					return eight;
+				}
+				
+				Trienode * setNine(int mag, int cnt)
+				{
+					nine = new Trienode(mag, cnt);
+					return nine;
+				}
+				
+				Trienode * setTen(int mag, int cnt)
+				{
+					ten = new Trienode(mag, cnt);
+					return ten;
+				}
+				
+				void copyOne(Trienode * node)
+				{
+					one = node;
+				}
+				
+				void copyTwo(Trienode * node)
+				{
+					two = node;
+				}
+				
+				void copyThree(Trienode * node)
+				{
+					three = node;
+				}
+				
+				void copyFour(Trienode * node)
+				{
+					four = node;
+				}
+				
+				void copyFive(Trienode * node)
+				{
+					five = node;
+				}
+				
+				void copySix(Trienode * node)
+				{
+					six = node;
+				}
+				
+				void copySeven(Trienode * node)
+				{
+					seven = node;
+				}
+				
+				void copyEight(Trienode * node)
+				{
+					eight = node;
+				}
+				
+				void copyNine(Trienode * node)
+				{
+					nine = node;
+				}
+				
+				void copyTen(Trienode * node)
+				{
+					ten = node;
+				}
+				
+				int sumMag()
+				{
+					if (left && right) return magnitude + left->sumMag() + right->sumMag();
+					if (left) return magnitude + left->sumMag();
+					if (right) return magnitude + right->sumMag();
+					return magnitude;
+				}
+    
+    			int sumCount()
+    			{
+    				if (left && right) return 1 + left->sumCount() + right->sumCount();
+    				if (left) return 1 + left->sumCount();
+    				if (right) return 1 + right->sumCount();
+    				return 1;
+    			}
 		};
 		
-		Trienode2 * left;
-		Trienode2 * right;
+		vector<Trienode *> nodes(10);
 	
 	public:
 	
-		Triehard2() // Initializes both sides as empty, but makes it searchable, mutatable
+		Triehard() // Initializes both sides as empty, but makes it searchable, mutatable
 		{
-			left = new Trienode2(0, 0);
-			right = new Trienode2(0, 0);
+			for (int i = 0; i < 10; ++i)
+			{
+				nodes[i] = nullptr;
+			}
 		}
 		
-		~Triehard2() // Same concern (syntax) as nodes, don't forget to write an erase method as well, maybe an empty/wipe
+		~Triehard() // Same concern (syntax) as nodes, don't forget to write an erase method as well, maybe an empty/wipe
 		{
-			delete left;
-			delete right;
+			for (int i = 0; i < 10; ++i)
+			{
+				delete nodes[i];
+			}
 		}
-		
-		/*
-		void print()
-		{
-			//Default param arg seems to be a bit different
-			//than i thought. Leaving it in the node print
-			//function, try to fix later perhaps?
-			if(left != nullptr)left->print(0);
-			if(right != nullptr)right->print(1);
-		}*/
 		
 		// build an array of what is "processed" so far. then when a flag is hit, print that array.
-		void mainPrint(Trienode2 * curnode, vector<int> * chars, int right)
+		void mainPrint(Trienode * curnode, vector<int> * chars, int val)
 		{
 			if (!curnode) return;
 			int curmag = curnode->getMag();
@@ -181,7 +306,7 @@ class Triehard2 // compressed binary trie
 			
 			while (curmag)
 			{
-				chars->push_back(right);
+				chars->push_back(val);
 				--curmag;
 			}
 			
@@ -197,6 +322,10 @@ class Triehard2 // compressed binary trie
 				--curcount;
 			}
 			
+			for (int i = 0; i < 10; ++i)
+			{
+				mainPrint()
+			}
 			mainPrint(curnode->getLeft(), chars, 0);
 			mainPrint(curnode->getRight(), chars, 1);
 			curmag = curnode->getMag();
@@ -210,20 +339,19 @@ class Triehard2 // compressed binary trie
 		
 		void myPrintIsBetterThanYoursLogan()
 		{
-			vector<int> * side1 = new vector<int>();
-			vector<int> * side2 = new vector<int>();
-			
-			mainPrint(left, side1, 0);
-			mainPrint(right, side2, 1);
-			delete side1;
-			delete side2;
+			for (int i = 0; i < 10; ++i)
+			{
+				vector<int> * chars = new vector<int>();
+				mainPrint(nodes[i], chars, i);
+				delete side;
+			}
 		}
 		
-		int search(int * val, int len) // val is the string, len is its length
+		int search(vector<int> * val) // val is the string
 		{
-			Trienode2 * curnode;
+			Trienode * curnode;
 			bool side; // represents if you are on the left or right (right being true)
-			if (val[0])
+			if ((*val)[0])
 			{
 				curnode = right;
 				side = true;
@@ -236,9 +364,9 @@ class Triehard2 // compressed binary trie
 			
 			int curmag = curnode->getMag();
 			
-			for (int i = 0; i < len; i++) // each iteration checks the current character for accuracy. it does not prepare for the next character like the preamble
+			for (int i = 0; i < val->size(); i++) // each iteration checks the current character for accuracy. it does not prepare for the next character like the preamble
 			{
-				if (val[i]) // if next digit is 1
+				if ((*val)[i]) // if next digit is 1
 				{
 					if (side) // if you're on the right
 					{
@@ -331,11 +459,11 @@ class Triehard2 // compressed binary trie
 			return 0;
 		}
 		
-		void insert(int * val, int len) // assumes valid input
+		void insert(vector<int> * val) // assumes valid input
 		{
-			Trienode2 * curnode; // the node we are checking against our current value
+			Trienode * curnode; // the node we are checking against our current value
 			bool side; // represents if you are on the left or right (right being true)
-			if (val[0])
+			if ((*val)[0])
 			{
 				curnode = right;
 				side = true;
@@ -348,9 +476,9 @@ class Triehard2 // compressed binary trie
 			
 			int curmag = curnode->getMag(); // "remaining" magnitude of the current node
 			
-			for (int i = 0; i < len; i++)
+			for (int i = 0; i < val->size(); i++)
 			{
-				if (val[i]) // if current digit is 1
+				if ((*val)[i]) // if current digit is 1
 				{
 					if (side) // if you're on the right
 					{
@@ -383,7 +511,7 @@ class Triehard2 // compressed binary trie
 					{
 						if (curmag) // this means we have a value here, so we need to split this node up, branching to the right will be handled by following code
 						{
-							Trienode2 * newnode = new Trienode2(0, curnode->getCount()); // this will be the second half of the big node
+							Trienode * newnode = new Trienode(0, curnode->getCount()); // this will be the second half of the big node
 							curnode->zeroCount(); // this and the passing of the count into newnode ensure count is not lost
 							
 							while (curmag) // fills newnode with the extra magnitude
@@ -447,7 +575,7 @@ class Triehard2 // compressed binary trie
 					{
 						if (curmag) // this means we have a value here, so we need to split this node up and branch to the left before this point
 						{
-							Trienode2 * newnode = new Trienode2(0, curnode->getCount()); // this will be the second half of the big node
+							Trienode * newnode = new Trienode(0, curnode->getCount()); // this will be the second half of the big node
 							curnode->zeroCount(); // This and the passing of getCount to newnode ensure count is not lost
 							
 							while (curmag) // fills newnode with the extra magnitude
@@ -492,7 +620,7 @@ class Triehard2 // compressed binary trie
 			}
 			else
 			{
-				Trienode2 * newnode = new Trienode2(0, curnode->getCount()); // this is our new node, which should retain old flagging
+				Trienode * newnode = new Trienode(0, curnode->getCount()); // this is our new node, which should retain old flagging
 				curnode->setCount(1); // curnode will now end where we want to insert, so this should be true
 				
 				while (curmag) // fills newnode with the extra magnitude
@@ -519,13 +647,13 @@ class Triehard2 // compressed binary trie
 			}
 		}
 		
-		void cut(int * val, int len) // this is delete because i can't use delete :(
+		void cut(vector<int> * val) // this is delete because i can't use delete :(
 		{
-			Trienode2 * curnode;
-			Trienode2 * prevnode = nullptr;
+			Trienode * curnode;
+			Trienode * prevnode = nullptr;
 			bool side; // represents if you are on the left or right (right being true)
 			bool side2; // previous node's side
-			if (val[0])
+			if ((*val)[0])
 			{
 				curnode = right;
 				side = true;
@@ -540,9 +668,9 @@ class Triehard2 // compressed binary trie
 			
 			int curmag = curnode->getMag();
 			
-			for (int i = 0; i < len; i++) // each iteration checks the current character for accuracy. it does not prepare for the next character like the preamble
+			for (int i = 0; i < val->size(); i++) // each iteration checks the current character for accuracy. it does not prepare for the next character like the preamble
 			{
-				if (val[i]) // if next digit is 1
+				if ((*val)[i]) // if next digit is 1
 				{
 					if (side) // if you're on the right
 					{
@@ -701,7 +829,7 @@ class Triehard2 // compressed binary trie
 			}
 			else if (side) // we are on the right and have shit to the right
 			{
-				Trienode2 * child = curnode->getRight();
+				Trienode * child = curnode->getRight();
 				while (child->getMag()) // moves magnitude from child to parent we are removing
 				{
 					child->subMag();
@@ -718,7 +846,7 @@ class Triehard2 // compressed binary trie
 			}
 			else // we are on the left and have shit to the left
 			{
-				Trienode2 * child = curnode->getLeft();
+				Trienode * child = curnode->getLeft();
 				while (child->getMag()) // moves magnitude from child to parent we are removing
 				{
 					child->subMag();
@@ -734,6 +862,38 @@ class Triehard2 // compressed binary trie
 				delete child;
 			}
 		}
+    
+    // update counter with children recursively
+	void mainCount(Trienode * curnode, int len, int right, int * counter)
+	{
+		if (!curnode) return;
+		len += curnode->getMag();
+		*counter += (len * curnode->getCount());
+		mainCount(curnode->getLeft(), len, 0, counter);
+		mainCount(curnode->getRight(), len, 1, counter);
+	}
+		
+	int countChars() // returns total word length of trie
+	{
+		int counter = 0;
+		if (left) mainCount(left, 0, 0, &counter);
+		if (right) mainCount(right, 0, 1, &counter);
+		return counter;
+	}
+    
+    float compressionovertrie() // returns nodes / nodes in a normal trie
+	{
+		float total = left->sumMag() + right->sumMag();
+		float compressed = left->sumCount() + right->sumCount();
+		return roundf(compressed/total * 100) / 100;
+	}
+    
+    float compressionoverdict() // returns nodes / sum of all word length
+    {
+    	float compressed = left->sumCount() + right->sumCount();
+    	float total = countChars();
+    	return roundf(compressed/total * 100) / 100;
+    }
 };
 
 #endif
