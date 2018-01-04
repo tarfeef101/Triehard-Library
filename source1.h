@@ -144,6 +144,22 @@ class Triehard // compressed binary trie
 				{
 					right = node;
 				}
+				
+				int sumMag()
+				{
+					if (left && right) return magnitude + left->sumMag() + right->sumMag();
+					if (left) return magnitude + left->sumMag();
+					if (right) return magnitude + right->sumMag();
+					return magnitude;
+				}
+    
+    			int sumCount()
+    			{
+    				if (left && right) return 1 + left->sumCount() + right->sumCount();
+    				if (left) return 1 + left->sumCount();
+    				if (right) return 1 + right->sumCount();
+    				return 1;
+    			}
 		};
 		
 		Trienode * left;
@@ -224,7 +240,7 @@ class Triehard // compressed binary trie
 		{
 			Trienode * curnode;
 			bool side; // represents if you are on the left or right (right being true)
-			if (*val[0])
+			if ((*val)[0])
 			{
 				curnode = right;
 				side = true;
@@ -239,7 +255,7 @@ class Triehard // compressed binary trie
 			
 			for (int i = 0; i < val->size(); i++) // each iteration checks the current character for accuracy. it does not prepare for the next character like the preamble
 			{
-				if (*val[i]) // if next digit is 1
+				if ((*val)[i]) // if next digit is 1
 				{
 					if (side) // if you're on the right
 					{
@@ -332,11 +348,11 @@ class Triehard // compressed binary trie
 			return 0;
 		}
 		
-		void insert(vector<int> * val, int len) // assumes valid input
+		void insert(vector<int> * val) // assumes valid input
 		{
 			Trienode * curnode; // the node we are checking against our current value
 			bool side; // represents if you are on the left or right (right being true)
-			if (*val[0])
+			if ((*val)[0])
 			{
 				curnode = right;
 				side = true;
@@ -351,7 +367,7 @@ class Triehard // compressed binary trie
 			
 			for (int i = 0; i < val->size(); i++)
 			{
-				if (*val[i]) // if current digit is 1
+				if ((*val)[i]) // if current digit is 1
 				{
 					if (side) // if you're on the right
 					{
@@ -520,13 +536,13 @@ class Triehard // compressed binary trie
 			}
 		}
 		
-		void cut(vector<int> * val, int len) // this is delete because i can't use delete :(
+		void cut(vector<int> * val) // this is delete because i can't use delete :(
 		{
 			Trienode * curnode;
 			Trienode * prevnode = nullptr;
 			bool side; // represents if you are on the left or right (right being true)
 			bool side2; // previous node's side
-			if (*val[0])
+			if ((*val)[0])
 			{
 				curnode = right;
 				side = true;
@@ -543,7 +559,7 @@ class Triehard // compressed binary trie
 			
 			for (int i = 0; i < val->size(); i++) // each iteration checks the current character for accuracy. it does not prepare for the next character like the preamble
 			{
-				if (*val[i]) // if next digit is 1
+				if ((*val)[i]) // if next digit is 1
 				{
 					if (side) // if you're on the right
 					{
@@ -737,37 +753,36 @@ class Triehard // compressed binary trie
 		}
     
     // update counter with children recursively
-		void mainCount(Trienode * curnode, int len, int right, int * counter)
-		{
-			if (!curnode) return;
-      len += curnode->getMag();		
-			*counter += (len * curnode->getCount());
-			
-			mainCount(curnode->getLeft(), len, 0, counter);
-			mainCount(curnode->getRight(), len, 1, counter);
-		}
+	void mainCount(Trienode * curnode, int len, int right, int * counter)
+	{
+		if (!curnode) return;
+		len += curnode->getMag();
+		*counter += (len * curnode->getCount());
+		mainCount(curnode->getLeft(), len, 0, counter);
+		mainCount(curnode->getRight(), len, 1, counter);
+	}
 		
-		int countChars() // returns total word length of trie
-		{
-      int counter = 0;
-			mainCount(left, 0, 0, &counter);
-			mainCount(right, 0, 1, &counter);
-      return counter;
-		}
+	int countChars() // returns total word length of trie
+	{
+		int counter = 0;
+		if (left) mainCount(left, 0, 0, &counter);
+		if (right) mainCount(right, 0, 1, &counter);
+		return counter;
+	}
     
     float compressionovertrie() // returns nodes / nodes in a normal trie
-		{
-      float total = left->sumMag() + right->sumMag();
-      float compressed = left->sumCount() + right->sumCount();
-      return roundf(compressed/total * 100) / 100;
-		}
+	{
+		float total = left->sumMag() + right->sumMag();
+		float compressed = left->sumCount() + right->sumCount();
+		return roundf(compressed/total * 100) / 100;
+	}
     
     float compressionoverdict() // returns nodes / sum of all word length
     {
-      float compressed = left->sumCount() + right->sumCount();
-      float total = countChars();
-      return roundf(compressed/total * 100) / 100;
-      
+    	float compressed = left->sumCount() + right->sumCount();
+    	float total = countChars();
+    	return roundf(compressed/total * 100) / 100;
+    }
 };
 
 #endif
