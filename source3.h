@@ -95,6 +95,16 @@ class Triehard // compressed decimal trie
 					children[x] = node;
 				}
 				
+				bool isLeaf()
+				{
+					for (int i = 0; i < 10; ++i)
+					{
+						if (children[i]) return false;
+					}
+					
+					return true;
+				}
+				
 				int sumMag()
 				{
 					int result = magnitude;
@@ -194,7 +204,7 @@ class Triehard // compressed decimal trie
 			int pos = (*val)[0]; // represents what value your current node is
 			int curmag = curnode->getMag();
 			
-			for (int i = 0; i < val->size(); i++) // each iteration checks the current character for accuracy. it does not prepare for the next character like the preamble
+			for (int i = 0; i < val->size(); i++) // each iteration checks the current character for accuracy.
 			{
 				if ((*val)[i] == pos) // if we are on the correct node already
 				{
@@ -242,154 +252,76 @@ class Triehard // compressed decimal trie
 			return 0;
 		}
 		
-		// START WORK HERE
 		void insert(vector<int> * val) // assumes valid input
 		{
-			Trienode * curnode; // the node we are checking against our current value
-			bool side; // represents if you are on the left or right (right being true)
-			if ((*val)[0])
-			{
-				curnode = right;
-				side = true;
-			}
-			else
-			{
-				curnode  = left;
-				side = false;
-			}
-			
+			Trienode * curnode = nodes[(*val)[0]];
+			int pos = (*val)[0]; // represents what value your current node is
 			int curmag = curnode->getMag(); // "remaining" magnitude of the current node
 			
-			for (int i = 0; i < val->size(); i++)
+			for (int i = 0; i < val->size(); i++) // each iteration validates against curnode for position i
 			{
-				if ((*val)[i]) // if current digit is 1
+				if ((*val)[i] == pos) // curnode matches current value
 				{
-					if (side) // if you're on the right
+					if (curmag) // curnode has magnitude left, just sub1 and continue
 					{
-						if (curmag) // if your current magnitude is >= 1 (still info "left" in this node)
-						{
-							--curmag;
-							continue;
-						}
-						else if (curnode->getRight()) // If current node is "exhausted", move on to next one
-						{
-							curnode = curnode->getRight();
-							curmag = curnode->getMag() - 1;
-							continue;
-						}
-						else if (!(curnode->getLeft()) && !(curnode->getCount())) // if there are no subtrees, just increase this node's magnitude
-						// also can't do that if the node is flagged, since it needs to retain that info, so check for this
-						{
-							curnode->addMag();
-							continue;
-						}
-						else // we're on a "1" node, but it is depleted, and there is a left subtree. so, we create a new node to the right to represent this bit
-						// also works if the node is flagged and we just need a new node to represent the unflagged set of 1s
-						{
-							curnode = curnode->setRight(1, 0);
-							continue;
-						}
-						
+						--curmag;
+						continue;
 					}
-					else // we're on a left subtree, but have a 1 coming up
+					
+					if (curnode->getX(pos)) // curnode is exhausted, but we have the same child with mag >=1, so use that
 					{
-						if (curmag) // this means we have a value here, so we need to split this node up, branching to the right will be handled by following code
-						{
-							Trienode * newnode = new Trienode(0, curnode->getCount()); // this will be the second half of the big node
-							curnode->zeroCount(); // this and the passing of the count into newnode ensure count is not lost
-							
-							while (curmag) // fills newnode with the extra magnitude
-							{
-								curnode->subMag();
-								--curmag;
-								newnode->addMag();
-							}
-							
-							newnode->copyLeft(curnode->getLeft()); // move the children to the bottom half
-							newnode->copyRight(curnode->getRight());
-							curnode->copyLeft(newnode); // put new node at left of curnode
-							curnode->copyRight(nullptr); // nothing is in the right yet
-							goto SKIP1; // skip next if check since we know new right is NULL
-						}
-						
-						if (curnode->getRight()) // we can and should move to the right. once there, we sub 1 from magnitude and move on.
-						{
-							curnode = curnode->getRight();
-							curmag = curnode->getMag() - 1;
-							side = true;
-							continue;
-						}
-						else // we are on left, it is empty, and the right side is empty. create and set that node to curnode->
-						{
-							SKIP1:
-							curnode = curnode->setRight(1, 0);
-							side = true;
-							continue;
-						}
+						curnode = curnode->getX(pos);
+						curmag = curnode->getMag() - 1;
+						continue;
 					}
+					
+					if (!(curnode->getCount()) && curnode->isLeaf()) // we aren't flagged and are a leaf, so add mag
+					{
+						curnode->addMag();
+						continue;
+					}
+					
+					curnode = curnode->setX(pos, 1, 0) // we must create a child with mag1, curmag is 0 so no change
+					continue;
 				}
-				else // next digit is a 0
+				else // curnode is not the same digit as val[i]
 				{
-					if (!side) // on a left subtree
+					if (curmag) // this means we are going to have to decompress
 					{
-						if (curmag) // still have 0s "remaining" at this node
+						Trienode * newnode = new Trienode(0, curnode->getCount()); // this'll be the second half of curnode-
+						curnode->zeroCount; // newnode should be flagged (if curnode was), not curnode
+						
+						while (curmag) // put extra magnitude into newnode
 						{
+							curnode->subMag();
 							--curmag;
-							continue;
-						}
-						else if (curnode->getLeft()) // no 0s remaining, but there is a left subtree
-						{
-							curnode = curnode->getLeft();
-							curmag = curnode->getMag() - 1;
-							continue;
-						}
-						else if (!(curnode->getRight()) && !(curnode->getCount())) // no subtrees and we're on the correct side, so add to this node's magnitude
-						// only if this node isn't flagged, since we must retain that info
-						{
-							curnode->addMag();
-							continue;
-						}
-						else // no 0s remaining || we are flagged, no left subtree, and we are going to add one.
-						{
-							curnode = curnode->setLeft(1, 0);
-							continue;
-						}
-					}
-					else // we're on a right subtree but have a 0 coming up
-					{
-						if (curmag) // this means we have a value here, so we need to split this node up and branch to the left before this point
-						{
-							Trienode * newnode = new Trienode(0, curnode->getCount()); // this will be the second half of the big node
-							curnode->zeroCount(); // This and the passing of getCount to newnode ensure count is not lost
-							
-							while (curmag) // fills newnode with the extra magnitude
-							{
-								curnode->subMag();
-								--curmag;
-								newnode->addMag();
-							}
-							
-							newnode->copyLeft(curnode->getLeft()); // move the children to the bottom half
-							newnode->copyRight(curnode->getRight());
-							curnode->copyLeft(nullptr); // nothing is in the left yet
-							curnode->copyRight(newnode); // put new node at right of curnode
-							goto SKIP2; // skip next if check since we know new left is NULL
+							newnode->addMag();
 						}
 						
-						if (curnode->getLeft()) // we can and should move to the left. once there, we sub 1 from magnitude and move on.
+						for (int i = 0; i < 10; i++) // move children to newnode
 						{
-							curnode = curnode->getLeft();
-							curmag = curnode->getMag() - 1;
-							side = false;
-							continue;
+							newnode->copyX(i, curnode->getX(i));
+							curnode->copyX(i, nullptr);
 						}
-						else // we are on right, it is empty, and the left side is empty. create and set that node to curnode->
-						{
-							SKIP2:
-							curnode = curnode->setLeft(1, 0);
-							side = false;
-							continue;
-						}
+						
+						curnode->copyX(pos, newnode); // put newnode in its place
+						curnode = curnode->setX((*val)[i], 1, 0); // insert new node for the string being inserted
+						curmag = curnode->getMag() - 1; // reset curmag
+						pos = (*val)[i]; // update pos
+						continue;
+					}
+					else if (curnode->getX((*val)[i])) // we have a child of the correct val
+					{
+						pos = (*val)[i];
+						curnode = curnode->getX(pos);
+						curmag = curnode->getMag() - 1;
+						continue;
+					}
+					else // insert a child, curmag is still 0
+					{
+						pos = (*val)[i];
+						curnode = curnode->setX(pos, 1, 0)'
+						continue;
 					}
 				}
 			}
@@ -414,45 +346,29 @@ class Triehard // compressed decimal trie
 					newnode->addMag();
 				}
 				
-				// now we create the newnode on the appropriate side
-				newnode->copyLeft(curnode->getLeft());
-				newnode->copyRight(curnode->getRight());
+				for (int i = 0; i < 10; i++) // move children to newnode
+				{
+					newnode->copyX(i, curnode->getX(i));
+					curnode->copyX(i, nullptr);
+				}
 				
-				if (side)
-				{
-					curnode->copyLeft(nullptr);
-					curnode->copyRight(newnode);
-				}
-				else
-				{
-					curnode->copyLeft(newnode);
-					curnode->copyRight(nullptr);
-				}
+				curnode->copyX(pos, newnode); // ensure newnode is actually linked to curnode
 			}
 		}
 		
 		void cut(vector<int> * val) // this is delete because i can't use delete :(
+		// NOT DONE AT ALL!!!!
 		{
 			Trienode * curnode;
 			Trienode * prevnode = nullptr;
-			bool side; // represents if you are on the left or right (right being true)
-			bool side2; // previous node's side
-			if ((*val)[0])
-			{
-				curnode = right;
-				side = true;
-				side2 = true;
-			}
-			else
-			{
-				curnode  = left;
-				side = false;
-				side2 = false;
-			}
-			
+			int pos; // represents the represented value of curnode (0-9)
+			int pos2; // previous node's side
+			side = (*val)[i];
+			side2 = side;
+			curnode = nodes[side];
 			int curmag = curnode->getMag();
 			
-			for (int i = 0; i < val->size(); i++) // each iteration checks the current character for accuracy. it does not prepare for the next character like the preamble
+			for (int i = 0; i < val->size(); i++) // each iteration checks the current character for accuracy.
 			{
 				if ((*val)[i]) // if next digit is 1
 				{
@@ -552,15 +468,7 @@ class Triehard // compressed decimal trie
 			// at this point, we have curnode being the "end" of our value
 			if (!(prevnode)) // if we are deleting one of the 2 base trees
 			{
-				if (side)
-				{
-					right->subCount();
-				}
-				else
-				{
-					left->subCount();
-				}
-				
+				nodes(pos)->subCount();
 				return;
 			}
 			
@@ -568,6 +476,7 @@ class Triehard // compressed decimal trie
 			if (curnode->getCount()) return; // This means we aren't removing a node, so no compression is possible
 			
 			// Cases where nodes have to be removed/compressed
+			// THIS NEEDS A LOT OF WORK!!!
 			if (!(curnode->getLeft()) && !(curnode->getRight())) // if our node has no children, destroy it and change parent's reference to NULL
 			{
 				if (side)
