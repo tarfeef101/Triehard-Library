@@ -262,14 +262,11 @@ class Triehard // compressed binary trie
 						if (curmag) // if your current magnitude is >= 1 (still info "left" in this node)
 						{
 							--curmag;
-							continue;
 						}
-						
-						if (curnode->getRight()) // If current node is "exhausted", move on to next one
+						else if (curnode->getRight()) // If current node is "exhausted", move on to next one
 						{
 							curnode = curnode->getRight();
 							curmag = curnode->getMag() - 1;
-							continue;
 						}
 						else
 						{
@@ -283,13 +280,11 @@ class Triehard // compressed binary trie
 						{
 							return 0;
 						}
-						
-						if (curnode->getRight())
+						else if (curnode->getRight())
 						{
 							curnode = curnode->getRight();
 							curmag = curnode->getMag() - 1;
 							side = true;
-							continue;
 						}
 						else
 						{
@@ -304,14 +299,11 @@ class Triehard // compressed binary trie
 						if (curmag)
 						{
 							--curmag;
-							continue;
 						}
-						
-						if (curnode->getLeft())
+						else if (curnode->getLeft())
 						{
 							curnode = curnode->getLeft();
 							curmag = curnode->getMag() - 1;
-							continue;
 						}
 						else
 						{
@@ -324,13 +316,11 @@ class Triehard // compressed binary trie
 						{
 							return 0;
 						}
-						
-						if (curnode->getLeft())
+						else if (curnode->getLeft())
 						{
 							curnode = curnode->getLeft();
 							curmag = curnode->getMag() - 1;
 							side = false;
-							continue;
 						}
 						else
 						{
@@ -374,25 +364,21 @@ class Triehard // compressed binary trie
 						if (curmag) // if your current magnitude is >= 1 (still info "left" in this node)
 						{
 							--curmag;
-							continue;
 						}
 						else if (curnode->getRight()) // If current node is "exhausted", move on to next one
 						{
 							curnode = curnode->getRight();
 							curmag = curnode->getMag() - 1;
-							continue;
 						}
 						else if (!(curnode->getLeft()) && !(curnode->getCount())) // if there are no subtrees, just increase this node's magnitude
 						// also can't do that if the node is flagged, since it needs to retain that info, so check for this
 						{
 							curnode->addMag();
-							continue;
 						}
 						else // we're on a "1" node, but it is depleted, and there is a left subtree. so, we create a new node to the right to represent this bit
 						// also works if the node is flagged and we just need a new node to represent the unflagged set of 1s
 						{
 							curnode = curnode->setRight(1, 0);
-							continue;
 						}
 						
 					}
@@ -422,14 +408,12 @@ class Triehard // compressed binary trie
 							curnode = curnode->getRight();
 							curmag = curnode->getMag() - 1;
 							side = true;
-							continue;
 						}
 						else // we are on left, it is empty, and the right side is empty. create and set that node to curnode->
 						{
 							SKIP1:
 							curnode = curnode->setRight(1, 0);
 							side = true;
-							continue;
 						}
 					}
 				}
@@ -440,24 +424,20 @@ class Triehard // compressed binary trie
 						if (curmag) // still have 0s "remaining" at this node
 						{
 							--curmag;
-							continue;
 						}
 						else if (curnode->getLeft()) // no 0s remaining, but there is a left subtree
 						{
 							curnode = curnode->getLeft();
 							curmag = curnode->getMag() - 1;
-							continue;
 						}
 						else if (!(curnode->getRight()) && !(curnode->getCount())) // no subtrees and we're on the correct side, so add to this node's magnitude
 						// only if this node isn't flagged, since we must retain that info
 						{
 							curnode->addMag();
-							continue;
 						}
 						else // no 0s remaining || we are flagged, no left subtree, and we are going to add one.
 						{
 							curnode = curnode->setLeft(1, 0);
-							continue;
 						}
 					}
 					else // we're on a right subtree but have a 0 coming up
@@ -486,14 +466,12 @@ class Triehard // compressed binary trie
 							curnode = curnode->getLeft();
 							curmag = curnode->getMag() - 1;
 							side = false;
-							continue;
 						}
 						else // we are on right, it is empty, and the left side is empty. create and set that node to curnode->
 						{
 							SKIP2:
 							curnode = curnode->setLeft(1, 0);
 							side = false;
-							continue;
 						}
 					}
 				}
@@ -567,16 +545,13 @@ class Triehard // compressed binary trie
 						{
 							--curmag;
 							side2 = side;
-							continue;
 						}
-						
-						if (curnode->getRight()) // If current node is "exhausted", move on to next one
+						else if (curnode->getRight()) // If current node is "exhausted", move on to next one
 						{
 							prevnode = curnode;
 							curnode = curnode->getRight();
 							curmag = curnode->getMag() - 1;
 							side2 = side;
-							continue;
 						}
 						else // node doesn't exist
 						{
@@ -590,15 +565,13 @@ class Triehard // compressed binary trie
 						{
 							return;
 						}
-						
-						if (curnode->getRight())
+						else if (curnode->getRight())
 						{
 							prevnode = curnode;
 							curnode = curnode->getRight();
 							curmag = curnode->getMag() - 1;
 							side = true;
 							side2 = false;
-							continue;
 						}
 						else // node doesn't exist
 						{
@@ -614,16 +587,13 @@ class Triehard // compressed binary trie
 						{
 							--curmag;
 							side2 = side;
-							continue;
 						}
-						
-						if (curnode->getLeft())
+						else if (curnode->getLeft())
 						{
 							prevnode = curnode;
 							curnode = curnode->getLeft();
 							curmag = curnode->getMag() - 1;
 							side2 = side;
-							continue;
 						}
 						else // node doesn't exist
 						{
@@ -636,15 +606,13 @@ class Triehard // compressed binary trie
 						{
 							return;
 						}
-						
-						if (curnode->getLeft())
+						else if (curnode->getLeft())
 						{
 							prevnode = curnode;
 							curnode = curnode->getLeft();
 							curmag = curnode->getMag() - 1;
 							side = false;
 							side2 = true;
-							continue;
 						}
 						else // node doesn't exist
 						{
