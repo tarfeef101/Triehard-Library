@@ -211,14 +211,11 @@ class Triehard // compressed decimal trie
 					if (curmag) // if your current magnitude is >= 1 (still info "left" in this node)
 					{
 						--curmag;
-						continue;
 					}
-					
-					if (curnode->getX(pos)) // if our current node is exhausted, move on to the next one
+					else if (curnode->getX(pos)) // if our current node is exhausted, move on to the next one
 					{
 						curnode = curnode->getX(pos);
 						curmag = curnode->getMag() - 1;
-						continue;
 					}
 					else
 					{
@@ -235,7 +232,6 @@ class Triehard // compressed decimal trie
 					{
 						curnode = curnode->getX(pos);
 						curmag = curnode->getMag() - 1;
-						continue;
 					}
 					else // we don't have the child, must be absent
 					{
@@ -265,24 +261,20 @@ class Triehard // compressed decimal trie
 					if (curmag) // curnode has magnitude left, just sub1 and continue
 					{
 						--curmag;
-						continue;
 					}
-					
-					if (curnode->getX(pos)) // curnode is exhausted, but we have the same child with mag >=1, so use that
+					else if (curnode->getX(pos)) // curnode is exhausted, but we have the same child with mag >=1, so use that
 					{
 						curnode = curnode->getX(pos);
 						curmag = curnode->getMag() - 1;
-						continue;
 					}
-					
-					if (!(curnode->getCount()) && curnode->isLeaf()) // we aren't flagged and are a leaf, so add mag
+					else if (!(curnode->getCount()) && curnode->isLeaf()) // we aren't flagged and are a leaf, so add mag
 					{
 						curnode->addMag();
-						continue;
 					}
-					
-					curnode = curnode->setX(pos, 1, 0) // we must create a child with mag1, curmag is 0 so no change
-					continue;
+					else
+					{
+						curnode = curnode->setX(pos, 1, 0) // we must create a child with mag1, curmag is 0 so no change
+					}
 				}
 				else // curnode is not the same digit as val[i]
 				{
@@ -308,20 +300,17 @@ class Triehard // compressed decimal trie
 						curnode = curnode->setX((*val)[i], 1, 0); // insert new node for the string being inserted
 						curmag = curnode->getMag() - 1; // reset curmag
 						pos = (*val)[i]; // update pos
-						continue;
 					}
 					else if (curnode->getX((*val)[i])) // we have a child of the correct val
 					{
 						pos = (*val)[i];
 						curnode = curnode->getX(pos);
 						curmag = curnode->getMag() - 1;
-						continue;
 					}
 					else // insert a child, curmag is still 0
 					{
 						pos = (*val)[i];
 						curnode = curnode->setX(pos, 1, 0)'
-						continue;
 					}
 				}
 			}
@@ -370,97 +359,42 @@ class Triehard // compressed decimal trie
 			
 			for (int i = 0; i < val->size(); i++) // each iteration checks the current character for accuracy.
 			{
-				if ((*val)[i]) // if next digit is 1
+				if ((*val)[i] == pos) // curnode matches current value
 				{
-					if (side) // if you're on the right
+					if (curmag) // we have mag left
 					{
-						if (curmag) // if your current magnitude is >= 1 (still info "left" in this node)
-						{
-							--curmag;
-							side2 = side;
-							continue;
-						}
-						
-						if (curnode->getRight()) // If current node is "exhausted", move on to next one
-						{
-							prevnode = curnode;
-							curnode = curnode->getRight();
-							curmag = curnode->getMag() - 1;
-							side2 = side;
-							continue;
-						}
-						else // node doesn't exist
-						{
-							return;
-						}
-						
+						--curmag;
+						pos2 = pos;
+					}
+					else if (curnode->getX(pos)) // if we have the correct child
+					{
+						prevnode = curnode;
+						curnode = curnode->getX(pos);
+						curmag = curnode->getMag() - 1;
+						pos2 = pos;
 					}
 					else
 					{
-						if (curmag) // node doesn't exist
-						{
-							return;
-						}
-						
-						if (curnode->getRight())
-						{
-							prevnode = curnode;
-							curnode = curnode->getRight();
-							curmag = curnode->getMag() - 1;
-							side = true;
-							side2 = false;
-							continue;
-						}
-						else // node doesn't exist
-						{
-							return;
-						}
+						return; // node does not exist, will make this an error later
 					}
 				}
-				else
+				else // curnode does NOT match current value
 				{
-					if (!side)
+					if (curmag)
 					{
-						if (curmag)
-						{
-							--curmag;
-							side2 = side;
-							continue;
-						}
-						
-						if (curnode->getLeft())
-						{
-							prevnode = curnode;
-							curnode = curnode->getLeft();
-							curmag = curnode->getMag() - 1;
-							side2 = side;
-							continue;
-						}
-						else // node doesn't exist
-						{
-							return;
-						}
+						return; // should be error later, but the val isn't inserted, since there is mag left in the wrong number
+					}
+					else if (curnode->getX((*val)[i])) // if we have the correct child
+					{
+						pos2 = pos;
+						pos = (*val)[i];
+						prevnode = curnode;
+						curnode = curnode->getX((*val)[i]);
+						curmag = curnode->getMag();
 					}
 					else
 					{
-						if (curmag) // node doesn't exist
-						{
-							return;
-						}
-						
-						if (curnode->getLeft())
-						{
-							prevnode = curnode;
-							curnode = curnode->getLeft();
-							curmag = curnode->getMag() - 1;
-							side = false;
-							side2 = true;
-							continue;
-						}
-						else // node doesn't exist
-						{
-							return;
-						}
+						return; // we don't have the right child, so return (to be error)
 					}
 				}
 			}
@@ -468,11 +402,12 @@ class Triehard // compressed decimal trie
 			// at this point, we have curnode being the "end" of our value
 			if (!(prevnode)) // if we are deleting one of the 2 base trees
 			{
-				nodes(pos)->subCount();
-				return;
+				if (nodes[pos]->getCount()) nodes[pos]->subCount();
+				else return; // later throw error for removing nothing
 			}
 			
-			curnode->subCount(); // Normally this is all that is necessary
+			if (curnode->getCount()) curnode->subCount(); // Normally this is all that is necessary
+			else return; // later throw error for removing nothing
 			if (curnode->getCount()) return; // This means we aren't removing a node, so no compression is possible
 			
 			// Cases where nodes have to be removed/compressed

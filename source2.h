@@ -642,17 +642,20 @@ class Triehard2 // compressed binary trie
 			{
 				if (side)
 				{
-					right->subCount();
+					if (right->getCount()) right->subCount();
+					else return; // later throw error for removing nothing
 				}
 				else
 				{
-					left->subCount();
+					if (left->getCount()) left->subCount();
+					else return; // later throw error for removing nothing
 				}
 				
 				return;
 			}
 			
-			curnode->subCount(); // Normally this is all that is necessary
+			if (curnode->getCount()) curnode->subCount(); // Normally this is all that is necessary
+			else return; // later throw error for removing nothing
 			if (curnode->getCount()) return; // This means we aren't removing a node, so no compression is possible
 			
 			// Cases where nodes have to be removed/compressed
