@@ -105,6 +105,30 @@ class Triehard // compressed decimal trie
 					return true;
 				}
 				
+				bool onlyKid(x)
+				{
+					for (int i = 0; i < 10; ++i)
+					{
+						if (i == x)
+						{
+							if (!children[i]) return false;
+							continue;
+						}
+						
+						if (children[i]) return false;
+					}
+					
+					return true;
+				}
+				
+				void changeCustody(Trienode * parent)
+				{
+					for (int i = 0; i < 10; ++i)
+					{
+						parent->copyX(i, children[i]);
+					}
+				}
+				
 				int sumMag()
 				{
 					int result = magnitude;
@@ -412,19 +436,27 @@ class Triehard // compressed decimal trie
 			
 			// Cases where nodes have to be removed/compressed
 			// THIS NEEDS A LOT OF WORK!!!
-			if (!(curnode->getLeft()) && !(curnode->getRight())) // if our node has no children, destroy it and change parent's reference to NULL
+			if (curnode->isLeaf()) // if our node has no children, destroy it and change parent's reference to NULL
 			{
-				if (side)
-				{
-					delete curnode;
-					prevnode->copyRight(nullptr);
-				}
-				else
-				{
-					delete curnode;
-					prevnode->copyLeft(nullptr);
-				}
+				delete curnode;
+				prevnode->copyX(pos, nullptr);
 			}
+			else if (prevnode->onlyKid(pos) && pos == pos2) // we have kids (a given now), our parent has none, and we are the same number as our parent. compress
+			{
+				while (curnode->getMag()) // move mag to parent
+				{
+					curnode->subMag();
+					prevnode->addMag();
+				}
+				
+				curnode->changeCustody(prevnode); // move kids to parent
+				delete curnode;
+				
+				// wait, can we have a parent and kid of the same # allowing us to compress into both, either, or just parent???
+				// consider what the children of each have to be to create these conditions
+				// eg what to do with 00 - 00 (now unflagged) -- 00 (has kids, or a flag)
+			}
+			
 			else if (side && curnode->getLeft() && prevnode->getLeft() && side2 && !(prevnode->getCount()) && !(prevnode->getLeft()))
 			// we are on the right, we have shit to the left, and the parent has nothing to the left, and is not flagged
 			// this is a rare case where we do have to compress
