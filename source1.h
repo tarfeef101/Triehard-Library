@@ -724,20 +724,20 @@ class Triehard // compressed binary trie
 		}
     
     // update counter with children recursively
-	void mainCount(Trienode * curnode, int len, int right, int * counter)
+	void mainCount(Trienode * curnode, int len, int * counter)
 	{
 		if (!curnode) return;
 		len += curnode->getMag();
 		*counter += (len * curnode->getCount());
-		mainCount(curnode->getLeft(), len, 0, counter);
-		mainCount(curnode->getRight(), len, 1, counter);
+		mainCount(curnode->getLeft(), len, counter);
+		mainCount(curnode->getRight(), len, counter);
 	}
 		
 	int countChars() // returns total word length of trie
 	{
 		int counter = 0;
-		if (left) mainCount(left, 0, 0, &counter);
-		if (right) mainCount(right, 0, 1, &counter);
+		if (left) mainCount(left, 0, &counter);
+		if (right) mainCount(right, 0, &counter);
 		return counter;
 	}
     

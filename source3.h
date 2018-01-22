@@ -105,6 +105,7 @@ class Triehard // compressed decimal trie
 					return true;
 				}
 				
+				// true if x is the only child node
 				bool onlyKid(x)
 				{
 					for (int i = 0; i < 10; ++i)
@@ -424,7 +425,7 @@ class Triehard // compressed decimal trie
 			}
 			
 			// at this point, we have curnode being the "end" of our value
-			if (!(prevnode)) // if we are deleting one of the 2 base trees
+			if (!(prevnode)) // if we are deleting one of the base trees
 			{
 				if (nodes[pos]->getCount()) nodes[pos]->subCount();
 				else return; // later throw error for removing nothing
@@ -432,6 +433,7 @@ class Triehard // compressed decimal trie
 			
 			if (curnode->getCount()) curnode->subCount(); // Normally this is all that is necessary
 			else return; // later throw error for removing nothing
+			
 			if (curnode->getCount()) return; // This means we aren't removing a node, so no compression is possible
 			
 			// Cases where nodes have to be removed/compressed
@@ -441,7 +443,7 @@ class Triehard // compressed decimal trie
 				delete curnode;
 				prevnode->copyX(pos, nullptr);
 			}
-			else if (prevnode->onlyKid(pos) && pos == pos2) // we have kids (a given now), our parent has none, and we are the same number as our parent. compress
+			else if (prevnode->onlyKid(pos) && pos == pos2) // we have kids (a given now), our parent has none else. compress
 			{
 				while (curnode->getMag()) // move mag to parent
 				{
@@ -455,102 +457,68 @@ class Triehard // compressed decimal trie
 				// wait, can we have a parent and kid of the same # allowing us to compress into both, either, or just parent???
 				// consider what the children of each have to be to create these conditions
 				// eg what to do with 00 - 00 (now unflagged) -- 00 (has kids, or a flag)
+				// no, the above is impossible. the first 00 must have another kid, or a flag or it wouldn't exist
 			}
-			
-			else if (side && curnode->getLeft() && prevnode->getLeft() && side2 && !(prevnode->getCount()) && !(prevnode->getLeft()))
-			// we are on the right, we have shit to the left, and the parent has nothing to the left, and is not flagged
-			// this is a rare case where we do have to compress
+			else if (curnode->onlyKid(pos))
+			// parent has other kids or a flag, cannot go into it (maybe like below?). if so, do those.if not,we gotta check if we can compress into our children (only if we have 1 kid, ofc)
 			{
-				while (curnode->getMag()) // Change mag to parent
-					{
-						curnode->subMag();
-						prevnode->addMag();
-					}
-					
-					prevnode->copyLeft(curnode->getLeft()); // Move left side up, delete old data
-					curnode->copyLeft(nullptr);
-					prevnode->copyRight(nullptr);
-					delete curnode;
-			}
-			else if (!(side) && curnode->getRight() && prevnode->getRight() && !(side2) && !(prevnode->getCount()) && !(prevnode->getRight()))
-			// we are on the left, we have shit to the right, and the parent has nothing to the right, and is not flagged
-			// the same rare case as above
-			{
-				while (curnode->getMag()) // Change mag to parent
-					{
-						curnode->subMag();
-						prevnode->addMag();
-					}
-					
-					prevnode->copyRight(curnode->getRight()); // Move left side up, delete old data
-					curnode->copyRight(nullptr);
-					prevnode->copyLeft(nullptr);
-					delete curnode;
-			}
-			else if (side) // we are on the right and have shit to the right
-			{
-				Trienode * child = curnode->getRight();
-				while (child->getMag()) // moves magnitude from child to parent we are removing
+				Trienode * newnode = curnode->getX(pos);
+				
+				while (curnode->getMag())
 				{
-					child->subMag();
-					curnode->addMag();
+					curnode->subMag();
+					newnode->addMag();
 				}
 				
-				curnode->setCount(child->getCount()); // Sets count to child's count
-				
-				curnode->copyLeft(child->getLeft()); // moves child's children to our parent node
-				curnode->copyRight(child->getRight());
-				child->copyLeft(nullptr); // Change child's children to null to allow for safe deletion
-				child->copyRight(nullptr);
-				delete child;
-			}
-			else // we are on the left and have shit to the left
-			{
-				Trienode * child = curnode->getLeft();
-				while (child->getMag()) // moves magnitude from child to parent we are removing
-				{
-					child->subMag();
-					curnode->addMag();
-				}
-				
-				curnode->setCount(child->getCount()); // Sets count to child's count
-				
-				curnode->copyLeft(child->getLeft()); // moves child's children to our parent node
-				curnode->copyRight(child->getRight());
-				child->copyLeft(nullptr); // Change child's children to null to allow for safe deletion
-				child->copyRight(nullptr);
-				delete child;
+				prevnode->copyX(pos, newnode);
+				delete curnode;
 			}
 		}
     
     // update counter with children recursively
-	void mainCount(Trienode * curnode, int len, int right, int * counter)
+	void mainCount(Trienode * curnode, int len, int * counter)
 	{
 		if (!curnode) return;
 		len += curnode->getMag();
 		*counter += (len * curnode->getCount());
-		mainCount(curnode->getLeft(), len, 0, counter);
-		mainCount(curnode->getRight(), len, 1, counter);
+		
+		for (int i = 0; i < 10; ++i)
+		{
+			mainCount(curnode->getX(i), len, counter)
+		}
 	}
 		
 	int countChars() // returns total word length of trie
 	{
 		int counter = 0;
-		if (left) mainCount(left, 0, 0, &counter);
-		if (right) mainCount(right, 0, 1, &counter);
+
+		for (int i = 0; i < 10; ++i)
+		{
+			mainCount(nodes[i], 0, &counter);
+		}
+		
 		return counter;
 	}
     
     float compressionovertrie() // returns nodes / nodes in a normal trie
 	{
-		float total = left->sumMag() + right->sumMag();
-		float compressed = left->sumCount() + right->sumCount();
+		float total = 0;
+		float compressed = 0;
+    	for (int i = 0; i < 10; ++i)
+    	{
+    		compressed += nodes[i]->sumCount();
+    		total += nodes[i]->sumMag();
+    	}
 		return roundf(compressed/total * 100) / 100;
 	}
     
     float compressionoverdict() // returns nodes / sum of all word length
     {
-    	float compressed = left->sumCount() + right->sumCount();
+    	float compressed = 0;
+    	for (int i = 0; i < 10; ++i)
+    	{
+    		compressed += nodes[i]->sumCount();
+    	}
     	float total = countChars();
     	return roundf(compressed/total * 100) / 100;
     }
