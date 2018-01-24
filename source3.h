@@ -506,7 +506,7 @@ class Triehard // compressed decimal trie
     float compressionovertrie() // returns nodes / nodes in a normal trie
 	{
 		float total = 0;
-		float compressed = 0;
+		float compressed = -10;
     	for (int i = 0; i < 10; ++i)
     	{
     		compressed += nodes[i]->sumCount();
@@ -517,7 +517,7 @@ class Triehard // compressed decimal trie
     
     float compressionoverdict() // returns nodes / sum of all word length
     {
-    	float compressed = 0;
+    	float compressed = -10;
     	for (int i = 0; i < 10; ++i)
     	{
     		compressed += nodes[i]->sumCount();

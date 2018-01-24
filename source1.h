@@ -744,13 +744,13 @@ class Triehard // compressed binary trie
     float compressionovertrie() // returns nodes / nodes in a normal trie
 	{
 		float total = left->sumMag() + right->sumMag();
-		float compressed = left->sumCount() + right->sumCount();
+		float compressed = left->sumCount() + right->sumCount() - 2;
 		return roundf(compressed/total * 100) / 100;
 	}
     
     float compressionoverdict() // returns nodes / sum of all word length
     {
-    	float compressed = left->sumCount() + right->sumCount();
+    	float compressed = left->sumCount() + right->sumCount() - 2;
     	float total = countChars();
     	return roundf(compressed/total * 100) / 100;
     }
