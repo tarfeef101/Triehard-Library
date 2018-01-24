@@ -402,7 +402,6 @@ class Triehard // compressed decimal trie
 					}
 					else
 					{
-						cout << "case 1" << endl;
 						return; // node does not exist, will make this an error later
 					}
 				}
@@ -410,7 +409,6 @@ class Triehard // compressed decimal trie
 				{
 					if (curmag)
 					{
-						cout << "case 2" << endl;
 						return; // should be error later, but the val isn't inserted, since there is mag left in the wrong number
 					}
 					else if (curnode->getX((*val)[i])) // if we have the correct child
@@ -419,18 +417,16 @@ class Triehard // compressed decimal trie
 						pos = (*val)[i];
 						prevnode = curnode;
 						curnode = curnode->getX(pos);
-						curmag = curnode->getMag();
+						curmag = curnode->getMag() - 1;
 					}
 					else
 					{
-						cout << "case 3 " << curnode->getX((*val)[i]) << endl;
 						return; // we don't have the right child, so return (to be error)
 					}
 				}
 			}
 			
-			cout << "we here" << endl;
-			
+
 			// at this point, we have curnode being the "end" of our value
 			if (!(prevnode)) // if we are deleting one of the base trees
 			{
