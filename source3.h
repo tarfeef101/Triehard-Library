@@ -18,13 +18,15 @@ class Triehard // compressed decimal trie
 				
 				int magnitude;
 				int count;
-				vector<Trienode *> children(10);
+				vector<Trienode *> children;
 				
 			public:
 			
 				Trienode(int magnitude, int count):
 				magnitude{magnitude}, count{count}
 				{
+					children.reserve(10);
+					
 					for (int i = 0; i < 10; ++i)
 					{
 						children[i] = nullptr;
@@ -106,7 +108,7 @@ class Triehard // compressed decimal trie
 				}
 				
 				// true if x is the only child node
-				bool onlyKid(x)
+				bool onlyKid(int x)
 				{
 					for (int i = 0; i < 10; ++i)
 					{
@@ -155,15 +157,17 @@ class Triehard // compressed decimal trie
     			}
 		};
 		
-		vector<Trienode *> nodes(10);
+		vector<Trienode *> nodes;
 	
 	public:
 	
-		Triehard() // Initializes both sides as empty, but makes it searchable, mutatable
+		Triehard() // Initializes all nodes as empty, but makes it searchable, mutatable
 		{
+			nodes.reserve(10);
+			
 			for (int i = 0; i < 10; ++i)
 			{
-				nodes[i] = nullptr;
+				nodes[i] = new Trienode(0, 0);
 			}
 		}
 		
@@ -202,8 +206,9 @@ class Triehard // compressed decimal trie
 			
 			for (int i = 0; i < 10; ++i)
 			{
-				mainPrint(children[i], chars, i)
+				mainPrint(curnode->getX(i), chars, i);
 			}
+			
 			curmag = curnode->getMag();
 			
 			while (curmag)
@@ -219,7 +224,7 @@ class Triehard // compressed decimal trie
 			{
 				vector<int> * chars = new vector<int>();
 				mainPrint(nodes[i], chars, i);
-				delete side;
+				delete chars;
 			}
 		}
 		
@@ -228,7 +233,7 @@ class Triehard // compressed decimal trie
 			Trienode * curnode = nodes[(*val)[0]];
 			int pos = (*val)[0]; // represents what value your current node is
 			int curmag = curnode->getMag();
-			
+
 			for (int i = 0; i < val->size(); i++) // each iteration checks the current character for accuracy.
 			{
 				if ((*val)[i] == pos) // if we are on the correct node already
@@ -253,10 +258,11 @@ class Triehard // compressed decimal trie
 					{
 						return 0;
 					}
-					else if (curnode->getX(pos)) // if our child for that # exists
+					else if (curnode->getX((*val)[i])) // if our child for that # exists
 					{
-						curnode = curnode->getX(pos);
+						curnode = curnode->getX((*val)[i]);
 						curmag = curnode->getMag() - 1;
+						pos = (*val)[i];
 					}
 					else // we don't have the child, must be absent
 					{
@@ -298,7 +304,7 @@ class Triehard // compressed decimal trie
 					}
 					else
 					{
-						curnode = curnode->setX(pos, 1, 0) // we must create a child with mag1, curmag is 0 so no change
+						curnode = curnode->setX(pos, 1, 0); // we must create a child with mag1, curmag is 0 so no change
 					}
 				}
 				else // curnode is not the same digit as val[i]
@@ -306,7 +312,7 @@ class Triehard // compressed decimal trie
 					if (curmag) // this means we are going to have to decompress
 					{
 						Trienode * newnode = new Trienode(0, curnode->getCount()); // this'll be the second half of curnode-
-						curnode->zeroCount; // newnode should be flagged (if curnode was), not curnode
+						curnode->zeroCount(); // newnode should be flagged (if curnode was), not curnode
 						
 						while (curmag) // put extra magnitude into newnode
 						{
@@ -335,7 +341,7 @@ class Triehard // compressed decimal trie
 					else // insert a child, curmag is still 0
 					{
 						pos = (*val)[i];
-						curnode = curnode->setX(pos, 1, 0)'
+						curnode = curnode->setX(pos, 1, 0);
 					}
 				}
 			}
@@ -371,15 +377,11 @@ class Triehard // compressed decimal trie
 		}
 		
 		void cut(vector<int> * val) // this is delete because i can't use delete :(
-		// NOT DONE AT ALL!!!!
 		{
-			Trienode * curnode;
+			Trienode * curnode = nodes[(*val)[0]];
 			Trienode * prevnode = nullptr;
-			int pos; // represents the represented value of curnode (0-9)
+			int pos = (*val)[0]; // represents the represented value of curnode (0-9)
 			int pos2; // previous node's side
-			side = (*val)[i];
-			side2 = side;
-			curnode = nodes[side];
 			int curmag = curnode->getMag();
 			
 			for (int i = 0; i < val->size(); i++) // each iteration checks the current character for accuracy.
@@ -400,6 +402,7 @@ class Triehard // compressed decimal trie
 					}
 					else
 					{
+						cout << "case 1" << endl;
 						return; // node does not exist, will make this an error later
 					}
 				}
@@ -407,6 +410,7 @@ class Triehard // compressed decimal trie
 				{
 					if (curmag)
 					{
+						cout << "case 2" << endl;
 						return; // should be error later, but the val isn't inserted, since there is mag left in the wrong number
 					}
 					else if (curnode->getX((*val)[i])) // if we have the correct child
@@ -414,15 +418,18 @@ class Triehard // compressed decimal trie
 						pos2 = pos;
 						pos = (*val)[i];
 						prevnode = curnode;
-						curnode = curnode->getX((*val)[i]);
+						curnode = curnode->getX(pos);
 						curmag = curnode->getMag();
 					}
 					else
 					{
+						cout << "case 3 " << curnode->getX((*val)[i]) << endl;
 						return; // we don't have the right child, so return (to be error)
 					}
 				}
 			}
+			
+			cout << "we here" << endl;
 			
 			// at this point, we have curnode being the "end" of our value
 			if (!(prevnode)) // if we are deleting one of the base trees
@@ -484,7 +491,7 @@ class Triehard // compressed decimal trie
 		
 		for (int i = 0; i < 10; ++i)
 		{
-			mainCount(curnode->getX(i), len, counter)
+			mainCount(curnode->getX(i), len, counter);
 		}
 	}
 		
