@@ -179,16 +179,6 @@ class Triehard // compressed binary trie
 			delete right;
 		}
 		
-		/*
-		void print()
-		{
-			//Default param arg seems to be a bit different
-			//than i thought. Leaving it in the node print
-			//function, try to fix later perhaps?
-			if(left != nullptr)left->print(0);
-			if(right != nullptr)right->print(1);
-		}*/
-		
 		// build an array of what is "processed" so far. then when a flag is hit, print that array.
 		void mainPrint(Trienode * curnode, vector<int> * chars, int right)
 		{

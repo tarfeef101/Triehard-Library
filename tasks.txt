@@ -1,17 +1,17 @@
 Notes/To Do:
 
 1) replace sending in strings of binary and lengths with:
-	a) only should need source2 for binary data, no need to not have the functionality it provides (replaced source1 with in-progress build, source3 with a base-10 in-progress)
-	b) any source should allow no length being provided, just a string (done in source1 with vectors)
 	c) one source should allow storage of ASCII strings, converting to binary in the backend
-	d) want a measure of compression (done in source1)
-		i) formula: nodes vs nodes in a normal trie
-		ii) formula: nodes vs total binary characters of all strings being stored (raw)
 2) error handling
 	a) throw error for deleting stuff that's not there
 	b) check/handle (and throw) when you cannot allocate space to do an operation
 	c) throw error for invalid input to functions
 		i) invalid characters in strings
 
-for source3: can put a goto into insert to skip checking if pos==val[i] since we set it at the start
 for source3: bool isLeaf() can be handled by setting a flag during inserts/deletions, that way we don't need to calculate
+(Not worth due to limited use, but higher storage cost)
+
+Summary:
+Source1 is binary
+Source2 is soure1 but worse
+Source3 is decimal
